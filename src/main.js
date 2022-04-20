@@ -4,12 +4,12 @@
 let config = {
     width: 1280,
     height: 800,
-    physics: {
-        default: "arcade",
-        arcade: {
-            debug: false // set to true to see box colliders
-        }
-    },
+    // physics: {
+    //     default: "arcade",
+    //     arcade: {
+    //         debug: false // set to true to see box colliders
+    //     }
+    // },
     scene: [
         Play
     ]
