@@ -14,6 +14,7 @@ class Play extends Phaser.Scene {
     }
 
     create() {
+        this.scrollSpeed = 1; // scrolling speed
         this.noteSize = 50; // pixel size of each note
         this.rowPos = [(2.5*game.config.height)/8, (3.5*game.config.height)/8, (4.5*game.config.height)/8, (5.5*game.config.height)/8]; // String rows
         this.lastRow = -1; // to track last row assignment
@@ -36,7 +37,7 @@ class Play extends Phaser.Scene {
         this.noteGroup = new NoteGroup(this, {
             classType: Note, // gameobject type
             key: 'guitar-pick', // texture
-            quantity: 24, // number of objects in group
+            quantity: 12, // number of objects in group
             active: true, // is active
             visible: true, // is visible
             setOrigin: {x: 0.5, y: 0.5} // origin position of texture (currently center)
@@ -44,18 +45,23 @@ class Play extends Phaser.Scene {
 
         // assign each note spawn location
         for (let i = 0; i < this.noteGroup.getChildren().length; i++) {
-            let coord = this.assignXY(i);
-            this.noteGroup.getChildren()[i].x = coord.xp;
-            this.noteGroup.getChildren()[i].y = coord.yp;
+            this.noteGroup.getChildren()[i].x = this.assignX(i);
+            this.noteGroup.getChildren()[i].y = this.assignY();
         }
     }
 
     // Phaser scene update method
     update() {
-        this.scrollGuitar(1); // scroll guitar to the left 1 px/frame 
+        this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left 1 px/frame 
         let grouping = this.noteGroup.getChildren();
         for (let i = 0; i < grouping.length; i++) {
-            grouping[i].moveX(-1);
+            grouping[i].moveX(-this.scrollSpeed);
+        }
+        for (let i = 0; i < grouping.length; i++) {
+            if (grouping[i].x < -this.noteSize) {
+                grouping[i].x = this.assignX();
+                grouping[i].y = this.assignY();
+            }
         }    
 
     }
@@ -69,17 +75,19 @@ class Play extends Phaser.Scene {
         if (this.guitarBodySmall.x == -game.config.height) this.guitarBodySmall.destroy(); // destroy when out of view
     }
 
-    // assign note x and y spawn location
-    assignXY(i) {
-        let spacingX = 100;
-        let x = game.config.width + spacingX * i;
-        //while (this.lastCol == x) x = game.config.width + this.noteSize + (spacingX * Phaser.Math.Between(0, 10));
-        this.lastCol = x;
+    // assign note x spawn location
+    assignX(i = 1) {
+        let spacingX = 120; // spacing between notes
+        let x = game.config.width + spacingX * i; // generate note's x position
+        // this.lastCol = x;
+        return x;
+    }
 
-        let y = this.rowPos[Phaser.Math.Between(0, this.rowPos.length - 1)];
-        while (this.lastRow == y) y = this.rowPos[Phaser.Math.Between(0, this.rowPos.length - 1)];
-        this.lastRow = y;
-
-        return {xp: x, yp: y};
+    // assign note y spawn location
+    assignY() {
+        let y = this.rowPos[Phaser.Math.Between(0, this.rowPos.length - 1)]; // generate note's y position (which string to spawn)
+        while (this.lastRow == y) y = this.rowPos[Phaser.Math.Between(0, this.rowPos.length - 1)]; // compare to last y position to prevent overlap
+        this.lastRow = y; // assign new previous y position
+        return y;
     }
 }
