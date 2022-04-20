@@ -25,7 +25,7 @@ class Play extends Phaser.Scene {
 
     create() {
         this.guitarBodyBig = this.add.sprite(game.config.width/2, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position behind guitar neck
-        this.guitarNeck = this.add.tileSprite(0, game.config.height/2, 1280, 370, 'guitar-neck').setOrigin(0, 0.5); // guitar neck is the main scrolling tileset
+        this.guitarNeck = this.add.tileSprite(0, game.config.height/2, 1280, 370, 'guitar-neck').setOrigin(0, 0.5); // guitar neck is the main scrolling tileSprite
         this.guitarBodySmall = this.add.sprite((3*game.config.width)/10, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position in front of guitar neck
         this.guitarBodyBig.setScale(2, 1.25); // (W, H) scaled to be larger than guitarBodySmall
         this.guitarBodySmall.setScale(1.25, 1); // (W, H) scaled to cover guitar neck
@@ -72,7 +72,6 @@ class Play extends Phaser.Scene {
 
     // for note scrolling
     scrollNotes(group) { group.scrollNotes(this); }
-    //scrollNotes(group, speed) { for (let i = 0; i < group.length; i++) group[i].moveX(-speed); }
 
     // when notes are out of view, reset with new positions
     resetNotes(group) { group.resetNotes(this); }
