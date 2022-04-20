@@ -56,31 +56,24 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE UPDATE METHOD
     update() {
-        let grouping = this.noteGroup.getChildren(); // get array of notes
-        this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left 1 px/frame 
-        this.scrollNotes(grouping, this.scrollSpeed); // scroll notes to the left by this.scrollspeed
-        this.resetNotes(grouping, this.noteSize); // reset notes when out of view
+        this.scrollGuitar(this.scrollSpeed); // scroll guitar to the by this.scrollspeed 
+        this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
+        this.resetNotes(this.noteGroup); // reset notes when out of view
     }
 
     // for guitar scrolling animation
-    scrollGuitar(fps) {
-        this.guitarNeck.tilePositionX += fps; // scroll neck to the left
-        this.guitarBodyBig.x -= fps; // scroll guitar big part to the left
-        this.guitarBodySmall.x -= fps; // scroll guitar small part to the left
+    scrollGuitar(speed) {
+        this.guitarNeck.tilePositionX += speed; // scroll neck to the left
+        this.guitarBodyBig.x -= speed; // scroll guitar big part to the left
+        this.guitarBodySmall.x -= speed; // scroll guitar small part to the left
         if (this.guitarBodyBig.x == -game.config.height) this.guitarBodyBig.destroy(); // destroy when out of view
         if (this.guitarBodySmall.x == -game.config.height) this.guitarBodySmall.destroy(); // destroy when out of view
     }
 
     // for note scrolling
-    scrollNotes(group, speed) { for (let i = 0; i < group.length; i++) group[i].moveX(-speed); }
+    scrollNotes(group) { group.scrollNotes(this); }
+    //scrollNotes(group, speed) { for (let i = 0; i < group.length; i++) group[i].moveX(-speed); }
 
     // when notes are out of view, reset with new positions
-    resetNotes(group, noteSize) {
-        for (let i = 0; i < group.length; i++) {
-            if (group[i].x < -noteSize) { // if note scrolls out of view
-                group[i].assignX(this); // assign new x
-                group[i].assignY(this); // assign new y
-            }
-        }
-    }
+    resetNotes(group) { group.resetNotes(this); }
 }
