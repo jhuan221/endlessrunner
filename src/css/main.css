@@ -1,0 +1,5 @@
+body {
+    display: grid;
+    height: 50vh;
+    justify-items: center;
+}
