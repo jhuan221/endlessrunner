@@ -4,7 +4,17 @@ class Play extends Phaser.Scene {
     constructor() {
         super('playScene');
 
-        
+        this.lastRow = -1; // to track last row assignment
+        this.noteCount = 12; // number of notes to spawn on screen
+        this.noteSize = 50; // pixel size of each note
+        this.rowPos = [
+            (2.5*game.config.height)/8, // String 1 (TOP)
+            (3.5*game.config.height)/8, // String 2
+            (4.5*game.config.height)/8, // String 3
+            (5.5*game.config.height)/8  // String 4
+        ];
+        this.scrollSpeed = 1; // scrolling speed
+        this.spacingX = 120; // spacing between notes
     }
 
     preload() {
@@ -14,15 +24,9 @@ class Play extends Phaser.Scene {
     }
 
     create() {
-        this.scrollSpeed = 1; // scrolling speed
-        this.noteSize = 50; // pixel size of each note
-        this.rowPos = [(2.5*game.config.height)/8, (3.5*game.config.height)/8, (4.5*game.config.height)/8, (5.5*game.config.height)/8]; // String rows
-        this.lastRow = -1; // to track last row assignment
-        this.lastCol = 0; // to track last col assignment
-
-        this.guitarBodyBig = this.add.sprite((game.config.width)/2, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position behind guitar neck, scrolls left
+        this.guitarBodyBig = this.add.sprite(game.config.width/2, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position behind guitar neck
         this.guitarNeck = this.add.tileSprite(0, game.config.height/2, 1280, 370, 'guitar-neck').setOrigin(0, 0.5); // guitar neck is the main scrolling tileset
-        this.guitarBodySmall = this.add.sprite((3*game.config.width)/10, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position in front of guitar neck, scrolls left
+        this.guitarBodySmall = this.add.sprite((3*game.config.width)/10, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position in front of guitar neck
         this.guitarBodyBig.setScale(2, 1.25); // (W, H) scaled to be larger than guitarBodySmall
         this.guitarBodySmall.setScale(1.25, 1); // (W, H) scaled to cover guitar neck
 
@@ -37,57 +41,46 @@ class Play extends Phaser.Scene {
         this.noteGroup = new NoteGroup(this, {
             classType: Note, // gameobject type
             key: 'guitar-pick', // texture
-            quantity: 12, // number of objects in group
+            quantity: this.noteCount, // number of objects in group
             active: true, // is active
             visible: true, // is visible
             setOrigin: {x: 0.5, y: 0.5} // origin position of texture (currently center)
         });
 
-        // assign each note spawn location
+        // assign each note a spawn location
         for (let i = 0; i < this.noteGroup.getChildren().length; i++) {
-            this.noteGroup.getChildren()[i].x = this.assignX(i);
-            this.noteGroup.getChildren()[i].y = this.assignY();
+            this.noteGroup.getChildren()[i].assignX(this, i); // note's x position
+            this.noteGroup.getChildren()[i].assignY(this); // note's y position
         }
     }
 
-    // Phaser scene update method
+    // PHASER SCENE UPDATE METHOD
     update() {
+        let grouping = this.noteGroup.getChildren(); // get array of notes
         this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left 1 px/frame 
-        let grouping = this.noteGroup.getChildren();
-        for (let i = 0; i < grouping.length; i++) {
-            grouping[i].moveX(-this.scrollSpeed);
-        }
-        for (let i = 0; i < grouping.length; i++) {
-            if (grouping[i].x < -this.noteSize) {
-                grouping[i].x = this.assignX();
-                grouping[i].y = this.assignY();
-            }
-        }    
-
+        this.scrollNotes(grouping, this.scrollSpeed); // scroll notes to the left by this.scrollspeed
+        this.resetNotes(grouping, this.noteSize); // reset notes when out of view
     }
 
     // for guitar scrolling animation
     scrollGuitar(fps) {
-        this.guitarNeck.tilePositionX += fps;
-        this.guitarBodyBig.x -= fps;
-        this.guitarBodySmall.x -= fps;
+        this.guitarNeck.tilePositionX += fps; // scroll neck to the left
+        this.guitarBodyBig.x -= fps; // scroll guitar big part to the left
+        this.guitarBodySmall.x -= fps; // scroll guitar small part to the left
         if (this.guitarBodyBig.x == -game.config.height) this.guitarBodyBig.destroy(); // destroy when out of view
         if (this.guitarBodySmall.x == -game.config.height) this.guitarBodySmall.destroy(); // destroy when out of view
     }
 
-    // assign note x spawn location
-    assignX(i = 1) {
-        let spacingX = 120; // spacing between notes
-        let x = game.config.width + spacingX * i; // generate note's x position
-        // this.lastCol = x;
-        return x;
-    }
+    // for note scrolling
+    scrollNotes(group, speed) { for (let i = 0; i < group.length; i++) group[i].moveX(-speed); }
 
-    // assign note y spawn location
-    assignY() {
-        let y = this.rowPos[Phaser.Math.Between(0, this.rowPos.length - 1)]; // generate note's y position (which string to spawn)
-        while (this.lastRow == y) y = this.rowPos[Phaser.Math.Between(0, this.rowPos.length - 1)]; // compare to last y position to prevent overlap
-        this.lastRow = y; // assign new previous y position
-        return y;
+    // when notes are out of view, reset with new positions
+    resetNotes(group, noteSize) {
+        for (let i = 0; i < group.length; i++) {
+            if (group[i].x < -noteSize) { // if note scrolls out of view
+                group[i].assignX(this); // assign new x
+                group[i].assignY(this); // assign new y
+            }
+        }
     }
 }
