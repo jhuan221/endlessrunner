@@ -110,10 +110,10 @@ class Play extends Phaser.Scene {
         
 
         // FIRST VERSION
-        // if (Phaser.Input.Keyboard.JustDown(keyDn) && this.gY+1 < this.rowPos.length) {
-        //     this.gY++; 
-        //     this.guitarPick.y = this.rowPos[this.gY];
-        // }
+        if (Phaser.Input.Keyboard.JustDown(keyDn) && this.gY+1 < this.rowPos.length) {
+            this.gY++; 
+            this.guitarPick.y = this.rowPos[this.gY];
+        }
 
         // SECOND VERSION
         // if (!this.gMoved && 
@@ -133,17 +133,17 @@ class Play extends Phaser.Scene {
         // }
 
         // THIRD VERSION
-        if (keyDn.isDown && this.guitarPick.y < this.rowPos[this.rowPos.length-1]) this.guitarPick.y += this.moveSpeed;
+        // if (keyDn.isDown && this.guitarPick.y < this.rowPos[this.rowPos.length-1]) this.guitarPick.y += this.moveSpeed;
     }
 
     // player inputs UP key moves guitar pick up
     inputUp() {
         
         // FIRST VERSION
-        // if (Phaser.Input.Keyboard.JustDown(keyUp) && this.gY-1 > -1) {
-        //     this.gY--; 
-        //     this.guitarPick.y = this.rowPos[this.gY];
-        // }
+        if (Phaser.Input.Keyboard.JustDown(keyUp) && this.gY-1 > -1) {
+            this.gY--; 
+            this.guitarPick.y = this.rowPos[this.gY];
+        }
 
         // SECOND VERSION
         // if (!this.gMoved && 
@@ -163,7 +163,7 @@ class Play extends Phaser.Scene {
         // }
 
         // THIRD VERSION
-        if (keyUp.isDown && this.guitarPick.y > this.rowPos[0]) this.guitarPick.y -= this.moveSpeed;
+        // if (keyUp.isDown && this.guitarPick.y > this.rowPos[0]) this.guitarPick.y -= this.moveSpeed;
 
         
     }
