@@ -122,6 +122,8 @@ class Play extends Phaser.Scene {
             this.gMovedDown = false;
             this.gMoved = false;
         }
+
+        // FIRST DRAFT
         // if (Phaser.Input.Keyboard.JustDown(keyDn) && this.gY+1 < this.rowPos.length) {
         //     this.gY++; 
         //     this.guitarPick.y = this.rowPos[this.gY];
