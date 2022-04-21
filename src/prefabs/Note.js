@@ -1,8 +1,10 @@
 // The Note Sprite Class
 
 class Note extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture) {
+    constructor(scene, x, y, texture, type) {
         super(scene, x, y, texture);
+    
+        this.type = type;
     }
 
     moveX(x) { this.x += x; } // move note across the screen
