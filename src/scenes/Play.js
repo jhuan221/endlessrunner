@@ -20,7 +20,9 @@ class Play extends Phaser.Scene {
     preload() {
         this.load.image('guitar-body', './assets/test-guitar-body.png'); // 'GUITAR BODY' W: 741 px, H: 741 px
         this.load.image('guitar-neck', './assets/test-guitar-neck.png'); // 'GUITAR NECK' W: 1200 px, H: 370 px, fret spacing: 150 px
-        this.load.image('guitar-pick', './assets/test-guitar-pick.png'); // 'GUITAR PICK' W: 50 px, H: 50px
+        this.load.image('guitar-pick', './assets/test-guitar-pick.png'); // 'GUITAR PICK' W: 50 px, H: 50 px
+        this.load.image('good-note', './assets/test-good-note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
+        this.load.image('bad-note', './assets/test-bad-note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
     }
 
     create() {
@@ -40,17 +42,18 @@ class Play extends Phaser.Scene {
         // setup note group
         this.noteGroup = new NoteGroup(this, {
             classType: Note, // gameobject type
-            key: 'guitar-pick', // texture
+            key: 'good-note',
             quantity: this.noteCount, // number of objects in group
             active: true, // is active
             visible: true, // is visible
             setOrigin: {x: 0.5, y: 0.5} // origin position of texture (currently center)
         });
 
-        // assign each note a spawn location
+        // assign each note a name and several attributes
         for (let i = 0; i < this.noteGroup.getChildren().length; i++) {
-            this.noteGroup.getChildren()[i].assignX(this, i); // note's x position
-            this.noteGroup.getChildren()[i].assignY(this); // note's y position
+            let child = this.noteGroup.getChildren()[i]; // get individual note
+            child.name = 'Note: ' + i; // set name of note
+            this.setGroupChildAttr(child, i); // setup child attributes
         }
     }
 
@@ -59,6 +62,31 @@ class Play extends Phaser.Scene {
         this.scrollGuitar(this.scrollSpeed); // scroll guitar to the by this.scrollspeed 
         this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
         this.resetNotes(this.noteGroup); // reset notes when out of view
+        for (let i = 0; i < this.noteGroup.getChildren().length; i++) { // check for collisions
+            let child = this.noteGroup.getChildren()[i];
+            this.checkCollision(this.guitarPick1, child);
+            this.checkCollision(this.guitarPick2, child);
+            this.checkCollision(this.guitarPick3, child);
+            this.checkCollision(this.guitarPick4, child);
+        }
+    }
+
+    // basic AABB collider
+    checkCollision(pick, note) {
+        if (pick.x < note.x + note.width &&
+            pick.x + pick.width > note.x &&
+            pick.y < note.y + note.height &&
+            pick.y + pick.height > note.y)    
+            console.log(note.name + ' isGood: ' + note.isGood); // for debugging
+    }
+
+    // setup note attributes
+    setGroupChildAttr(child, i = 1) {
+        let isGood = Phaser.Math.Between(0, 9); // randomly generate type attribute
+        child.isGood = isGood % 3 == 0 ? true : false // set note if isGood or not isGood
+        child.setText(isGood % 3 == 0 ? 'good-note' : 'bad-note') // assign proper texture based on isGood
+        child.assignX(this, i) // note's x position
+        child.assignY(this); // note's y position
     }
 
     // for guitar scrolling animation
