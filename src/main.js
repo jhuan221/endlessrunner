@@ -17,4 +17,9 @@ let config = {
 
 let game = new Phaser.Game(config);
 
-let keyUP, keyDOWN; // reserve move up and down keys (subject to change)
+let keyUp, keyDn; // reserve move up and down keys (subject to change)
+
+// DEBUGGING PICKS
+// this.guitarPick2 = this.add.sprite(this.guitarPickX, this.rowPos[1], 'guitar-pick').setOrigin(0.5, 0.5);
+// this.guitarPick3 = this.add.sprite(this.guitarPickX, this.rowPos[2], 'guitar-pick').setOrigin(0.5, 0.5);
+// this.guitarPick4 = this.add.sprite(this.guitarPickX, this.rowPos[3], 'guitar-pick').setOrigin(0.5, 0.5);
