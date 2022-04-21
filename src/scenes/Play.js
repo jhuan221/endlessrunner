@@ -5,6 +5,9 @@ class Play extends Phaser.Scene {
         super('playScene');
 
         this.lastRow = -1; // to track last row assignment
+        this.minType = 0; // the smallest number in a range for random type generator
+        this.maxType = 9; // the largest number in a range for random type generator
+        this.modType = 3; // the modulus used for assigning good or bad notes
         this.noteCount = 12; // number of notes to spawn on screen
         this.noteSize = 50; // pixel size of each note
         this.rowPos = [
@@ -19,7 +22,7 @@ class Play extends Phaser.Scene {
 
     preload() {
         this.load.image('guitar-body', './assets/test-guitar-body.png'); // 'GUITAR BODY' W: 741 px, H: 741 px
-        this.load.image('guitar-neck', './assets/test-guitar-neck.png'); // 'GUITAR NECK' W: 1200 px, H: 370 px, fret spacing: 150 px
+        this.load.image('guitar-neck', './assets/test-guitar-neck2.png'); // 'GUITAR NECK' W: 1200 px, H: 370 px, fret spacing: 150 px
         this.load.image('guitar-pick', './assets/test-guitar-pick.png'); // 'GUITAR PICK' W: 50 px, H: 50 px
         this.load.image('good-note', './assets/test-good-note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
         this.load.image('bad-note', './assets/test-bad-note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
@@ -42,7 +45,7 @@ class Play extends Phaser.Scene {
         // setup note group
         this.noteGroup = new NoteGroup(this, {
             classType: Note, // gameobject type
-            key: 'good-note',
+            key: 'good-note', // default texture key
             quantity: this.noteCount, // number of objects in group
             active: true, // is active
             visible: true, // is visible
@@ -82,10 +85,10 @@ class Play extends Phaser.Scene {
 
     // setup note attributes
     setGroupChildAttr(child, i = 1) {
-        let isGood = Phaser.Math.Between(0, 9); // randomly generate type attribute
-        child.isGood = isGood % 3 == 0 ? true : false // set note if isGood or not isGood
-        child.setText(isGood % 3 == 0 ? 'good-note' : 'bad-note') // assign proper texture based on isGood
-        child.assignX(this, i) // note's x position
+        let res = Phaser.Math.Between(this.minType, this.maxType); // randomly generate type attribute
+        child.isGood = res % this.modType == 0 ? true : false; // set note if isGood or not isGood
+        child.setText(child.isGood ? 'good-note' : 'bad-note'); // assign proper texture based on isGood
+        child.assignX(this, i); // note's x position
         child.assignY(this); // note's y position
     }
 
