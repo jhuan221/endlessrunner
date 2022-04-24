@@ -53,6 +53,8 @@ class Play extends Phaser.Scene {
         // player controls
         keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP); // arrow key UP
         keyDn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN); // arrow key DOWN
+        keyLt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT); // arrow key LEFT
+        keyRt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT); // arrow key RIGHT
 
         // setup note group
         this.noteGroup = new NoteGroup(this, {
@@ -70,13 +72,16 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE UPDATE METHOD
     update() {
-        this.scrollGuitar(this.scrollSpeed); // scroll guitar to the by this.scrollspeed 
+        this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
         this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
         this.resetNotes(this.noteGroup); // reset notes when out of view
         this.checkCollisionIter(); // iterate over all notes and check for collisions
         // player controls
-        this.inputDn(); // player presses DOWN key
         this.inputUp(); // player presses UP key
+        this.inputDn(); // player presses DOWN key
+        this.inputLt(); // player presses LEFT key
+        this.inputRt(); // player presses RIGHT key
+        
     }
 
     // basic AABB collider
@@ -105,40 +110,8 @@ class Play extends Phaser.Scene {
         }
     }
 
-    // player inputs DOWN key moves guitar pick down
-    inputDn() {
-        
-
-        // FIRST VERSION
-        // if (Phaser.Input.Keyboard.JustDown(keyDn) && this.gY+1 < this.rowPos.length) {
-        //     this.gY++; 
-        //     this.guitarPick.y = this.rowPos[this.gY];
-        // }
-
-        // SECOND VERSION
-        // if (!this.gMoved && 
-        //     Phaser.Input.Keyboard.JustDown(keyDn) && 
-        //     this.gY+1 < this.rowPos.length &&
-        //     this.guitarPick.y < this.rowPos[this.gY+1]) {
-        //         this.gY++;
-        //         this.gMoved = true;
-        //         this.gMovedDown = true; 
-        // }
-        // if (this.gMovedDown && this.guitarPick.y < this.rowPos[this.gY]) {
-        //     this.guitarPick.y += this.moveSpeed; 
-        // }
-        // if (this.gMovedDown && this.guitarPick.y >= this.rowPos[this.gY]) {
-        //     this.gMovedDown = false;
-        //     this.gMoved = false;
-        // }
-
-        // THIRD VERSION
-        if (keyDn.isDown && this.guitarPick.y < this.rowPos[this.rowPos.length-1]) this.guitarPick.y += this.moveSpeed;
-    }
-
-    // player inputs UP key moves guitar pick up
+    // UP key moves guitar pick up
     inputUp() {
-        
         // FIRST VERSION
         // if (Phaser.Input.Keyboard.JustDown(keyUp) && this.gY-1 > -1) {
         //     this.gY--; 
@@ -146,26 +119,67 @@ class Play extends Phaser.Scene {
         // }
 
         // SECOND VERSION
-        // if (!this.gMoved && 
-        //     Phaser.Input.Keyboard.JustDown(keyUp) && 
-        //     this.gY-1 > -1 && 
-        //     this.guitarPick.y > this.rowPos[this.gY-1]) {
-        //         this.gY--;
-        //         this.gMoved = true;
-        //         this.gMovedUp = true;
-        // }
-        // if (this.gMovedUp && this.guitarPick.y > this.rowPos[this.gY]) {
-        //     this.guitarPick.y -= this.moveSpeed;
-        // }
-        // if (this.gMovedUp && this.guitarPick.y <= this.rowPos[this.gY]) {
-        //     this.gMovedUp = false;
-        //     this.gMoved = false;
-        // }
+        if (!this.gMoved && 
+            Phaser.Input.Keyboard.JustDown(keyUp) && 
+            this.gY-1 > -1 && 
+            this.guitarPick.y > this.rowPos[this.gY-1]) {
+                this.gY--;
+                this.gMoved = true;
+                this.gMovedUp = true;
+        }
+        if (this.gMovedUp && this.guitarPick.y > this.rowPos[this.gY]) {
+            this.guitarPick.y -= this.moveSpeed;
+        }
+        if (this.gMovedUp && this.guitarPick.y <= this.rowPos[this.gY]) {
+            this.gMovedUp = false;
+            this.gMoved = false;
+        }
 
         // THIRD VERSION
-        if (keyUp.isDown && this.guitarPick.y > this.rowPos[0]) this.guitarPick.y -= this.moveSpeed;
+        //if (keyUp.isDown && this.guitarPick.y > this.rowPos[0]) this.guitarPick.y -= this.moveSpeed;
+    }
 
-        
+    // DOWN key moves guitar pick down
+    inputDn() {
+        // FIRST VERSION
+        // if (Phaser.Input.Keyboard.JustDown(keyDn) && this.gY+1 < this.rowPos.length) {
+        //     this.gY++; 
+        //     this.guitarPick.y = this.rowPos[this.gY];
+        // }
+
+        // SECOND VERSION
+        if (!this.gMoved && 
+            Phaser.Input.Keyboard.JustDown(keyDn) && 
+            this.gY+1 < this.rowPos.length &&
+            this.guitarPick.y < this.rowPos[this.gY+1]) {
+                this.gY++;
+                this.gMoved = true;
+                this.gMovedDown = true; 
+        }
+        if (this.gMovedDown && this.guitarPick.y < this.rowPos[this.gY]) {
+            this.guitarPick.y += this.moveSpeed; 
+        }
+        if (this.gMovedDown && this.guitarPick.y >= this.rowPos[this.gY]) {
+            this.gMovedDown = false;
+            this.gMoved = false;
+        }
+
+        // THIRD VERSION
+        //if (keyDn.isDown && this.guitarPick.y < this.rowPos[this.rowPos.length-1]) this.guitarPick.y += this.moveSpeed;
+    }
+
+    // LEFT key moves guitar pick left (backward)
+    inputLt() {
+        if (keyLt.isDown && this.guitarPick.x > this.guitarPickX) {
+            this.guitarPick.x -= this.moveSpeed;
+        }
+    }
+
+    // RIGHT key moves guitar pick right (forward)
+    inputRt() {
+        if (keyRt.isDown && this.guitarPick.x < (9*game.config.width)/10) {
+            this.guitarPick.x += this.moveSpeed;
+        }
     }
 
     // assign note attributes
