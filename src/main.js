@@ -2,6 +2,7 @@
 // We may need to use the Physics library in Phaser in order to dynamically create and destroy objects (music notes)
 
 let config = {
+    type: Phaser.CANVAS,
     width: 1280,
     height: 800,
     // physics: {
