@@ -49,13 +49,13 @@ class Play extends Phaser.Scene {
         this.guitarBodySmall.setScale(1.25, 1); // (W, H) scaled to cover guitar neck
 
         // player guitar pick
-        this.guitarPick = new GuitarPick(this, 
-                                        this.guitarPickX, 
-                                        this.guitarPickY, 
-                                        'guitar-pick',
-                                        this.moveSpeed, 
-                                        this.guitarPickX, 
-                                        (9*game.config.width)/10)
+        this.guitarPick = new GuitarPick(this, // this scene
+                                        this.guitarPickX, // starting x position
+                                        this.guitarPickY, // starting y position
+                                        'guitar-pick', // texture
+                                        this.moveSpeed, // move speed
+                                        this.guitarPickX, // minimum x position
+                                        (9*game.config.width)/10) // maximum x position
                                         .setOrigin(0.5, 0.5);
 
         // player controls
