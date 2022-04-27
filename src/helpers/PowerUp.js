@@ -13,7 +13,7 @@ class PowerUp {
 }
 
 // Makes the pick invinsible from negative effects and
-// increases the speed of the scene scrolling
+// increases the speed of the scene scrolling for 5 seconds
 class Invincible extends PowerUp {
     constructor(name) {
         super(name);
