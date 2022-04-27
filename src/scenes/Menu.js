@@ -20,7 +20,7 @@ class Menu extends Phaser.Scene {
         }
 
         // temporary menu text
-        this.add.text(640, 400, 'Untitled Music IR Game', menuConfig).setOrigin(0.5);
+        this.add.text(640, 400, 'Endless Strummer', menuConfig).setOrigin(0.5);
         this.add.text(640, 480, 'press space to start', menuConfig).setOrigin(0.5);
 
         // defining keys
