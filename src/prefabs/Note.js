@@ -6,9 +6,9 @@ class Note extends Phaser.GameObjects.Sprite {
 
         this.name = ''; // name of object (for debugging)
         this.points = 0; // point value of note (good: +10, bad: -5)
-        this.powerUpType; // if note is a power up, this is the power-up type
+        this.powerUpType = new PowerUp('none'); // if note is a power up, this is the power-up type
 
-        //this.isActive = true; // true: collision with note affects Play parameters
+        this.isActive = true; // true: collision with note affects Play parameters
         this.isGood = true; // is good note or not (bad note)
         this.isPowerUp = false; // is a powerup note
     }

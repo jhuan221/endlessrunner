@@ -25,7 +25,8 @@ class Play extends Phaser.Scene {
         this.gPts = 10; // good notes: +10 points
         this.bPts = -5; // bad notes: -5 points
         this.PU_spawn = false; // if true, note group will try to spawn a power-up (logic prevents having too many power-ups at one time)
-        this.PU_active = false; 
+        this.PU_active = false;
+        this.PU_timer; 
 
         // guitar pick variables
         this.gY = Phaser.Math.Between(0, this.rowPos.length - 1) // randomly chooses an index for pick starting Y position
@@ -95,7 +96,7 @@ class Play extends Phaser.Scene {
         this.powerupTimer = this.time.addEvent(this.powerupTimerConfig);
 
         // power-up types
-        this.PU_Inv = new Invincible('invincible');
+        this.PU_Inv = new Invincible('invincible', this.move);
 
         // game start or paused
         this.gameStart = false;
@@ -140,6 +141,15 @@ class Play extends Phaser.Scene {
         this.guitarPick.update(this); // update player guitar pick
     }
 
+    // assess if points should be applied
+    assessPoints(pick, note) {
+        if (!pick.isInv ||
+            pick.isInv && note.isGood)
+            return note.points;
+        else
+            return 0;
+    }
+
     // basic AABB collider
     checkCollision(pick, note) {
         if (pick.x < note.x + note.width &&
@@ -154,8 +164,8 @@ class Play extends Phaser.Scene {
                     this.PU_active = true;
                     note.powerUpType.modifyScene(this.guitarPick, this); // change scene state to reflect power-up effects
                 } else {
-                    this.playerScore += note.points; // apply point values to player score
-                    console.log(this.playerScore);
+                    this.playerScore += this.assessPoints(pick, note); // apply point values to player score
+                    console.log('Score: ' + this.playerScore);
                 }
             }    
     }
@@ -189,6 +199,8 @@ class Play extends Phaser.Scene {
             child.powerUpType = this.PU_Inv;
             child.setText('powerup-note'); // set note texture to powerup texture
         } else {
+            child.isPowerUp = false;
+            child.powerUpType = new PowerUp('none');
             child.setPoints(child.isGood ? this.gPts : this.bPts); // set note's point value
             child.setText(child.isGood ? 'good-note' : 'bad-note'); // assign proper texture based on isGood
         }
@@ -242,8 +254,5 @@ class Play extends Phaser.Scene {
         })
     }
 
-    // trigger power-up effect
-    triggerPowerUp(note) {
 
-    }
 }
