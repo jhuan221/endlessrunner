@@ -71,7 +71,7 @@ class Play extends Phaser.Scene {
         keyDn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN); // arrow key DOWN
         keyLt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT); // arrow key LEFT
         keyRt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT); // arrow key RIGHT
-
+            
         // setup note group
         this.noteGroup = new NoteGroup(this, {
             classType: Note, // gameobject type
@@ -122,7 +122,21 @@ class Play extends Phaser.Scene {
         // player score
         this.playerScore = 0;
 
-
+        // display score 
+        let scoreConfig = {                             // configuarations for score
+            fontFamily: 'Andale Mono',
+            fontSize: '28px',
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.scoreCenter = this.add.text(580, 20,     
+        this.playerScore, scoreConfig);
 
         // assign each note a name and several attributes
         this.initializeNotes();
@@ -166,6 +180,7 @@ class Play extends Phaser.Scene {
                 } else {
                     this.playerScore += this.assessPoints(pick, note); // apply point values to player score
                     console.log('Score: ' + this.playerScore);
+                    this.scoreCenter.text = this.playerScore;
                 }
             }    
     }
