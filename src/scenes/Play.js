@@ -116,7 +116,7 @@ class Play extends Phaser.Scene {
         this.PU_Inv = new Invincible('invincible', 3, 5000); // INVINCIBILITY MODE
         this.PU_Str = new Shooter('shooter', 0, 7000); // SHOOTER MODE
         this.PU_Ary = [
-            //this.PU_Inv, 
+            this.PU_Inv, 
             this.PU_Str
         ];
 
