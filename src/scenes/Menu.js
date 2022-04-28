@@ -22,15 +22,20 @@ class Menu extends Phaser.Scene {
         // temporary menu text
         this.add.text(640, 400, 'Endless Strummer', menuConfig).setOrigin(0.5);
         this.add.text(640, 480, 'press space to start', menuConfig).setOrigin(0.5);
+        this.add.text(640, 560, 'press ← for how to play', menuConfig).setOrigin(0.5);
 
         // defining keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        keyLt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     }
 
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
-            console.log("space is pressed");
+            //console.log("space is pressed");
             this.scene.start('playScene');
+        }
+        if(Phaser.Input.Keyboard.JustDown(keyLt)){
+            this.scene.start('instructionsScene');
         }
     }
 }

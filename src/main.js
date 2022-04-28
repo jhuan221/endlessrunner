@@ -13,7 +13,8 @@ let config = {
     // },
     scene: [
         Menu,
-        Play
+        Instructions,
+        Play,
     ]
 }
 
