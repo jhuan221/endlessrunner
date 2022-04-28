@@ -35,6 +35,9 @@ class Play extends Phaser.Scene {
         this.guitarPickY = this.rowPos[this.gY]; // player's starting Y position
         this.moveSpeed = 5; // guitar pick moving speed
 
+        // cheer bar variables
+        this.barStatus = 1;
+        
     }
 
     // PHASER SCENE PRELOAD METHOD
@@ -45,6 +48,7 @@ class Play extends Phaser.Scene {
         this.load.image('good-note', './assets/tinified/test-good-note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
         this.load.image('bad-note', './assets/tinified/test-bad-note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
+        this.load.spritesheet('bar', './assets/bar.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 4}); // 'BAR' W: 400 pc, H; 100 px
     }
 
     // PHASER SCENE CREATE METHOD
@@ -126,7 +130,6 @@ class Play extends Phaser.Scene {
             callback: () => {
                 this.gameTimeElapsed += 1;
                 console.log('Game Time: ' + this.gameTimeElapsed);
-                //this.timeLeft.text = this.gameTimeElapsed; // changing the time display
             },
             callbackScope: this,
             delay: 1000, // 1 second
@@ -160,6 +163,12 @@ class Play extends Phaser.Scene {
         // display score 
         this.scoreCenter = this.add.text(580, 20,     
         this.playerScore, displayConfig);
+
+        // cheer bar setup 
+        this.cheerbar = this.add.sprite(1100, 50, 'bar', 0).setOrigin(0.5);
+        console.log("current frame: " + this.cheerbar.texture.frameTotal);
+        //this.cheerbar.visible = false;
+        //this.cheerbar.setFrame();
 
         // assign each note a name and several attributes
         this.initializeNotes();
