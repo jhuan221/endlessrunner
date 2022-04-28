@@ -24,9 +24,10 @@ class Play extends Phaser.Scene {
         this.spacingX = 150; // spacing between notes
         this.gPts = 10; // good notes: +10 points
         this.bPts = -5; // bad notes: -5 points
+
+        // note powerup variables
         this.PU_spawn = false; // if true, note group will try to spawn a power-up (logic prevents having too many power-ups at one time)
-        this.PU_active = false;
-        this.PU_timer; 
+        this.PU_active = false; // if true, a powerup was picked up and is active
 
         // guitar pick variables
         this.gY = Phaser.Math.Between(0, this.rowPos.length - 1) // randomly chooses an index for pick starting Y position
@@ -56,21 +57,12 @@ class Play extends Phaser.Scene {
         this.guitarBodyBig.setScale(2, 1.25); // (W, H) scaled to be larger than guitarBodySmall
         this.guitarBodySmall.setScale(1.25, 1); // (W, H) scaled to cover guitar neck
 
-        // player guitar pick
-        this.guitarPick = new GuitarPick(this, // this scene
-                                        this.guitarPickX, // starting x position
-                                        this.guitarPickY, // starting y position
-                                        'guitar-pick', // texture
-                                        this.moveSpeed, // move speed
-                                        this.guitarPickX, // minimum x position
-                                        (9*game.config.width)/10) // maximum x position
-                                        .setOrigin(0.5, 0.5);
-
         // player controls
         keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP); // arrow key UP
         keyDn = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN); // arrow key DOWN
         keyLt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT); // arrow key LEFT
         keyRt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT); // arrow key RIGHT
+        keySp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); // space bar for shooting
 
         // setup note group
         this.noteGroup = new NoteGroup(this, {
@@ -81,6 +73,26 @@ class Play extends Phaser.Scene {
             visible: true, // is visible
             setOrigin: {x: 0.5, y: 0.5} // origin position of texture (currently center)
         });
+
+        // player guitar pick
+        this.guitarPick = new GuitarPick(this, // this scene
+                                        this.guitarPickX, // starting x position
+                                        this.guitarPickY, // starting y position
+                                        'guitar-pick', // texture
+                                        this.moveSpeed, // move speed
+                                        this.guitarPickX, // minimum x position
+                                        (9*game.config.width)/10) // maximum x position
+                                        .setOrigin(0.5, 0.5);
+
+        this.bulletGroup = new BulletGroup(this, {
+            classType: GuitarBullet,
+            key: 'guitar-pick',
+            quantity: 0,
+            active: false,
+            visible: false,
+            setOrigin: {x: 0.5, y: 0.5},
+            setScale: {x: 0.5, y: 0.5}
+        })
 
         // power-up timer configuration
         this.powerupTimerConfig = {
@@ -96,7 +108,12 @@ class Play extends Phaser.Scene {
         this.powerupTimer = this.time.addEvent(this.powerupTimerConfig);
 
         // power-up types
-        this.PU_Inv = new Invincible('invincible', this.move);
+        this.PU_Inv = new Invincible('invincible', 3, 5000); // INVINCIBILITY MODE
+        this.PU_Str = new Shooter('shooter', 0, 10000); // SHOOTER MODE
+        this.PU_Ary = [
+            this.PU_Inv, 
+            this.PU_Str
+        ];
 
         // game start or paused
         this.gameStart = false;
@@ -132,13 +149,11 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE UPDATE METHOD
     update() {
-        if (this.gameStart) {
-            this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
-            this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
-        }
+        if (this.gameStart) this.scrollCtrl(this.scrollSpeed, this.noteGroup); // scroll scene environment
         this.resetNotes(this.noteGroup); // reset notes when out of view
-        this.checkCollisionIter(); // iterate over all notes and check for collisions
+        this.checkCollisionNotes(); // iterate over all notes and check for collisions
         this.guitarPick.update(this); // update player guitar pick
+        this.firedBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
     }
 
     // assess if points should be applied
@@ -171,9 +186,19 @@ class Play extends Phaser.Scene {
     }
 
     // iterate over all notes to check for collisions
-    checkCollisionIter() {
+    checkCollisionNotes() {
         for (let i = 0; i < this.noteGroup.getChildren().length; i++) 
             this.checkCollision(this.guitarPick, this.noteGroup.getChildren()[i]);
+    }
+
+    // when in shooter mode, fire bullets loaded into bulletGroup
+    firedBullet() {
+        for (let i = 0; i < this.bulletGroup.getChildren().length; i++) {
+            let child = this.bulletGroup.getChildren()[i];
+            if (child.active && child.visible) {
+                child.x += 5;
+            }
+        }
     }
 
     // initial setup of notes
@@ -196,7 +221,7 @@ class Play extends Phaser.Scene {
             this.PU_spawn = false; // prevent more powerups from spawning until timer elapses
             this.powerupTimer = this.time.addEvent(this.powerupTimerConfig); // timer until next powerup can spawn
             child.isPowerUp = true; // good note is upgraded to a powerup note
-            child.powerUpType = this.PU_Inv;
+            child.powerUpType = this.PU_Ary[Phaser.Math.Between(0, this.PU_Ary.length - 1)]; // select a powerup at random
             child.setText('powerup-note'); // set note texture to powerup texture
         } else {
             child.isPowerUp = false;
@@ -208,6 +233,12 @@ class Play extends Phaser.Scene {
         child.assignY(this); // note's y position
         child.visible = true; // note's visibility true
         child.active = true; // note is interactable
+    }
+
+    // scroll handler
+    scrollCtrl(speed, group) {
+        this.scrollGuitar(speed); // scroll guitar
+        this.scrollNotes(group); // scroll notes
     }
 
     // for guitar scrolling animation

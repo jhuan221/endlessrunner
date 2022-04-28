@@ -11,6 +11,7 @@ class Note extends Phaser.GameObjects.Sprite {
         this.isActive = true; // true: collision with note affects Play parameters
         this.isGood = true; // is good note or not (bad note)
         this.isPowerUp = false; // is a powerup note
+        this.SP_active = false; // if space bar input is enabled
     }
 
     // move note across the screen

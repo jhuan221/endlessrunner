@@ -20,6 +20,7 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
         this.inputDn(scene); // player moves down
         this.inputLt(); // player moves left
         this.inputRt(); // player moves right
+        if (this.SP_active) this.inputSp(scene); // if space bar is enabled, shoot smaller picks
     }
 
     // UP key moves guitar pick up
@@ -92,5 +93,10 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
         if (keyRt.isDown && this.x < this.maxX) { // check if right key is held down and is not at the maxX
             this.x += this.moveSpeed; // move to the right at this speed while held down
         }
+    }
+
+    inputSp(scene) {
+        if (Phaser.Input.Keyboard.JustDown(keySp))
+            scene.bulletGroup.fireBullet(scene);
     }
 }

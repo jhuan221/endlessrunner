@@ -1,10 +1,11 @@
 // The PowerUps class contains the many scene(state) changes that can occur while in Play
 
 class PowerUp {
-    constructor(name) {
+    constructor(name, scrollSpeed, duration) {
 
         this.name = name; // name of powerup
-        this.PU_timer; // timer used for powerup duration
+        this.PU_scrollSpeed = scrollSpeed; // will add this value to the scene's scrollSpeed
+        this.duration = duration; // length of time the powerup is active
     }
 
     revertScene(scene) {
@@ -12,29 +13,51 @@ class PowerUp {
     }
 }
 
-// Makes the pick invinsible from negative effects and
+// Makes the pick invincible from negative effects and
 // increases the speed of the scene scrolling for 5 seconds
 class Invincible extends PowerUp {
-    constructor(name) {
-        super(name);
-        
-        this.PU_scrollSpeed = 2; // will add this value to the scene's scrollSpeed
+    constructor(name, scrollSpeed, duration) {
+        super(name, scrollSpeed, duration);
         this.PU_isInv = true; // will change guitar pick to run through bad notes without penalty
     }
 
     modifyScene(pick, scene) {
-        console.log('invincibility')
+        console.log('invincibility');
         scene.scrollSpeed += this.PU_scrollSpeed;
         pick.isInv = this.PU_isInv;
         scene.PU_timer = scene.time.addEvent({
             callback: () => {
-                console.log('End pu');
+                console.log('End inv');
                 scene.scrollSpeed -= this.PU_scrollSpeed;
                 pick.isInv = !pick.isInv;
                 scene.PU_active = false;
             },
             callbackScope: scene,
-            delay: 5000
+            delay: this.duration
+        })
+    }
+}
+
+// Pick can now shoot smaller picks to destroy bad (and good) notes
+class Shooter extends PowerUp {
+    constructor(name, scrollSpeed, duration) {
+        super(name, scrollSpeed, duration);
+        this.PU_isInv = true; // will change guitar pick to run through bad notes without penalty
+    }
+
+    modifyScene(pick, scene) {
+        console.log('shooter');
+        pick.SP_active = true;
+        //scene.scrollSpeed += this.PU_scrollSpeed;
+        scene.PU_timer = scene.time.addEvent({
+            callback: () => {
+                console.log('End shooter');
+                //scene.scrollSpeed -= this.PU_scrollSpeed;
+                scene.PU_active = false;
+                pick.SP_active = false;
+            },
+            callbackScope: scene,
+            delay: this.duration
         })
     }
 }
