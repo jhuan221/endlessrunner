@@ -4,7 +4,7 @@ class Play extends Phaser.Scene {
     constructor() {
         super('playScene');
 
-        this.scrollSpeed = 2; // game scrolling speed
+        this.scrollSpeed = 3; // game scrolling speed
 
         // guitar strings
         this.rowPos = [
@@ -28,6 +28,7 @@ class Play extends Phaser.Scene {
         // note powerup variables
         this.PU_spawn = false; // if true, note group will try to spawn a power-up (logic prevents having too many power-ups at one time)
         this.PU_active = false; // if true, a powerup was picked up and is active
+        this.bulletCount = 15; // USED ONLY FOR DEBUGGING
 
         // guitar pick variables
         this.gY = Phaser.Math.Between(0, this.rowPos.length - 1) // randomly chooses an index for pick starting Y position
@@ -87,7 +88,7 @@ class Play extends Phaser.Scene {
         this.bulletGroup = new BulletGroup(this, {
             classType: GuitarBullet,
             key: 'guitar-pick',
-            quantity: 0,
+            quantity: this.bulletCount,
             active: false,
             visible: false,
             setOrigin: {x: 0.5, y: 0.5},
@@ -109,9 +110,9 @@ class Play extends Phaser.Scene {
 
         // power-up types
         this.PU_Inv = new Invincible('invincible', 3, 5000); // INVINCIBILITY MODE
-        this.PU_Str = new Shooter('shooter', 0, 10000); // SHOOTER MODE
+        this.PU_Str = new Shooter('shooter', 0, 7000); // SHOOTER MODE
         this.PU_Ary = [
-            this.PU_Inv, 
+            //this.PU_Inv, 
             this.PU_Str
         ];
 
@@ -175,9 +176,11 @@ class Play extends Phaser.Scene {
             this.timeLeft.text = this.gameTimeElapsed + " secs"; // updating timer display
         }
         this.resetNotes(this.noteGroup); // reset notes when out of view
+        this.checkCollisionBullets(); // iterate over all bullets and notes for collisions
         this.checkCollisionNotes(); // iterate over all notes and check for collisions
         this.guitarPick.update(this); // update player guitar pick
-        this.firedBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
+        this.fireBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
+        console.log('Active Bullet Count: ' + this.bulletGroup.getLength());
     }
 
     // assess if points should be applied
@@ -199,15 +202,28 @@ class Play extends Phaser.Scene {
                 //console.log(note.name + ' isGood: ' + note.isGood); // for debugging
                 note.visible = false; // make note invisible
                 note.active = false; // make note not interactable
-                if (note.isPowerUp && !this.PU_active) {
-                    this.PU_active = true;
-                    note.powerUpType.modifyScene(this.guitarPick, this); // change scene state to reflect power-up effects
+                if (note.isPowerUp && !this.PU_active) { // if note was a powerup
+                    this.PU_active = true; // set powerup active to true
+                    note.powerUpType.modifyScene(this.guitarPick, this); // change scene state to reflect powerup effects
+                } else if (pick.name == 'bullet') { // if the pick was a bullet (SHOOTER MODE) 
+                    this.bulletGroup.killAndHide(pick);
+                    pick.x = 0;
+                    pick.y = 0;
                 } else {
                     this.playerScore += this.assessPoints(pick, note); // apply point values to player score
                     console.log('Score: ' + this.playerScore);
                     this.scoreCenter.text = this.playerScore;           // changing the score display
                 }
             }    
+    }
+
+    // iterate over all notes and bullets to check for collisions
+    checkCollisionBullets() {
+        for (let i = 0; i < this.bulletGroup.getChildren().length; i++) {
+            for (let j = 0; j < this.noteGroup.getChildren().length; j++) {
+                this.checkCollision(this.bulletGroup.getChildren()[i], this.noteGroup.getChildren()[j]);
+            }
+        }
     }
 
     // iterate over all notes to check for collisions
@@ -217,11 +233,16 @@ class Play extends Phaser.Scene {
     }
 
     // when in shooter mode, fire bullets loaded into bulletGroup
-    firedBullet() {
+    fireBullet() {
         for (let i = 0; i < this.bulletGroup.getChildren().length; i++) {
             let child = this.bulletGroup.getChildren()[i];
             if (child.active && child.visible) {
                 child.x += 5;
+            }
+            if (child.x > game.config.width) {
+                this.bulletGroup.killAndHide(child);
+                child.x = 0;
+                child.y = 0;
             }
         }
     }

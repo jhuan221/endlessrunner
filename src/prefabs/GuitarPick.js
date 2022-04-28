@@ -5,6 +5,7 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture);
 
         scene.add.existing(this); // add object to scene
+        this.name = 'player'; // playable character
         this.minX = minX; // min X position
         this.maxX = maxX; // max X position
         this.moveSpeed = speed; // guitar pick moving speed
@@ -96,7 +97,10 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
     }
 
     inputSp(scene) {
-        if (Phaser.Input.Keyboard.JustDown(keySp))
-            scene.bulletGroup.fireBullet(scene);
+        if (Phaser.Input.Keyboard.JustDown(keySp)) {
+            let child = scene.bulletGroup.getFirstDead(false, this.x, this.y);
+            child = child.setActive(true);
+            child = child.setVisible(true);
+        }
     }
 }
