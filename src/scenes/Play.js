@@ -126,6 +126,7 @@ class Play extends Phaser.Scene {
             callback: () => {
                 this.gameTimeElapsed += 1;
                 console.log('Game Time: ' + this.gameTimeElapsed);
+                //this.timeLeft.text = this.gameTimeElapsed; // changing the time display
             },
             callbackScope: this,
             delay: 1000, // 1 second
@@ -133,13 +134,32 @@ class Play extends Phaser.Scene {
             paused: true // timer is paused initially
         };
 
+        // display config
+        let displayConfig = {                             // configuarations for score
+            fontFamily: 'Andale Mono',
+            fontSize: '28px',
+            backgroundColor: '#FFFFFF',
+            color: '#000000',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 100
+        }
         // scene timer
         this.gameTimer = this.time.addEvent(this.gameTimerConfig);
+        
+        // display time
+        this.timeLeft = this.add.text(20, 20, this.gameTimeElapsed + " secs", 
+        displayConfig);
 
         // player score
         this.playerScore = 0;
 
-
+        // display score 
+        this.scoreCenter = this.add.text(580, 20,     
+        this.playerScore, displayConfig);
 
         // assign each note a name and several attributes
         this.initializeNotes();
@@ -149,7 +169,11 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE UPDATE METHOD
     update() {
-        if (this.gameStart) this.scrollCtrl(this.scrollSpeed, this.noteGroup); // scroll scene environment
+        if (this.gameStart) {
+            this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
+            this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
+            this.timeLeft.text = this.gameTimeElapsed + " secs"; // updating timer display
+        }
         this.resetNotes(this.noteGroup); // reset notes when out of view
         this.checkCollisionNotes(); // iterate over all notes and check for collisions
         this.guitarPick.update(this); // update player guitar pick
@@ -181,6 +205,7 @@ class Play extends Phaser.Scene {
                 } else {
                     this.playerScore += this.assessPoints(pick, note); // apply point values to player score
                     console.log('Score: ' + this.playerScore);
+                    this.scoreCenter.text = this.playerScore;           // changing the score display
                 }
             }    
     }
@@ -233,12 +258,6 @@ class Play extends Phaser.Scene {
         child.assignY(this); // note's y position
         child.visible = true; // note's visibility true
         child.active = true; // note is interactable
-    }
-
-    // scroll handler
-    scrollCtrl(speed, group) {
-        this.scrollGuitar(speed); // scroll guitar
-        this.scrollNotes(group); // scroll notes
     }
 
     // for guitar scrolling animation
