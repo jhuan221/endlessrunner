@@ -37,9 +37,12 @@ class Play extends Phaser.Scene {
         this.moveSpeed = 5; // guitar pick moving speed
 
         // cheer bar variables
-        this.barStatus = 0;                 // current frame bar is on
+        this.barStatus = 1;                 // current frame bar is on
         this.badNoteCount = 0;              // current count of player hitting bad note
+        this.goodNoteCount = 0;             // current count of player hitting good note
         
+        // game over var
+        this.gameOver = false;
     }
 
     // PHASER SCENE PRELOAD METHOD
@@ -51,6 +54,7 @@ class Play extends Phaser.Scene {
         this.load.image('bad-note', './assets/Bad_Note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
         this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
+        this.load.image('gameover', './assets/gameovertitle.png' );
     }
 
     // PHASER SCENE CREATE METHOD
@@ -104,7 +108,7 @@ class Play extends Phaser.Scene {
         this.powerupTimerConfig = {
             callback: () => {
                 this.PU_spawn = true;
-                console.log('power-up spawn enabled');
+                //console.log('power-up spawn enabled');
             },
             callbackScope: this,
             delay: 10000 // 10 seconds
@@ -131,7 +135,7 @@ class Play extends Phaser.Scene {
         this.gameTimerConfig = {
             callback: () => {
                 this.gameTimeElapsed += 1;
-                console.log('Game Time: ' + this.gameTimeElapsed);
+                //console.log('Game Time: ' + this.gameTimeElapsed);
             },
             callbackScope: this,
             delay: 1000, // 1 second
@@ -167,10 +171,12 @@ class Play extends Phaser.Scene {
         this.playerScore, displayConfig);
 
         // cheer bar setup 
-        this.cheerbar = this.add.sprite(1085, 60, 'bar', 0).setOrigin(0.5);
-        console.log("current frame: " + this.cheerbar.texture.frameTotal);
+        this.cheerbar = this.add.sprite(1085, 60, 'bar', this.barStatus).setOrigin(0.5);
+        //this.barStatus = 16;
+        //this.cheerbar.frame = this.barStatus;
+        //console.log("current frame: " + this.cheerbar.frame);
         //this.cheerbar.visible = false;
-        //this.cheerbar.setFrame();
+        // this.cheerbar.setFrame(3);
 
         // assign each note a name and several attributes
         this.initializeNotes();
@@ -180,25 +186,73 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE UPDATE METHOD
     update() {
-        if (this.gameStart) {
-            this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
-            this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
-            this.timeLeft.text = this.gameTimeElapsed + " secs"; // updating timer display
+        if (!this.gameOver){
+            if (this.gameStart) {
+                this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
+                this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
+                this.timeLeft.text = this.gameTimeElapsed + " secs"; // updating timer display
+            }
+            this.resetNotes(this.noteGroup); // reset notes when out of view
+            this.checkCollisionBullets(); // iterate over all bullets and notes for collisions
+            this.checkCollisionNotes(); // iterate over all notes and check for collisions
+            this.guitarPick.update(this); // update player guitar pick
+            this.fireBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
+            //console.log('Active Bullet Count: ' + this.bulletGroup.getLength());
         }
-        this.resetNotes(this.noteGroup); // reset notes when out of view
-        this.checkCollisionBullets(); // iterate over all bullets and notes for collisions
-        this.checkCollisionNotes(); // iterate over all notes and check for collisions
-        this.guitarPick.update(this); // update player guitar pick
-        this.fireBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
-        console.log('Active Bullet Count: ' + this.bulletGroup.getLength());
+        else{
+            this.add.sprite(640, 400, 'gameover').setOrigin(0.5);
+        }
+    }
+
+    // changing the current movement on the bar
+    // if player hits 3 bad notes == decrease
+    // if player hits 5 good notes == increase;
+    // else if it hit good/bad note, increase respective counter
+    barMovement(pick, note){
+        // console.log("BAD: " + this.badNoteCount);
+        // console.log("GOOD: " + this.goodNoteCount);
+        if (this.badNoteCount == 2){
+            console.log("\N BAR CHANGE DECREASE \N");
+            if (this.barStatus > 0){
+                this.barStatus--;
+                this.cheerbar.setFrame(this.barStatus);
+                this.badNoteCount = 0;
+                return;
+            }
+            else{
+                this.gameOver = true;
+                return;
+            }
+        }
+        else if (this.goodNoteCount == 4){
+            console.log("\N BAR CHANGE INCREASE \N");
+            if (this.barStatus != 16){
+                this.barStatus++;
+                this.cheerbar.setFrame(this.barStatus);
+                this.goodNoteCount = 0;
+                return;
+            }
+        }
+        if (note.isGood){
+            //console.log("good note hit\n");
+            this.goodNoteCount++;
+        }
+        else if (!note.isGood){
+            this.badNoteCount++;
+        }
+          console.log("BAD: " + this.badNoteCount);
+        console.log("GOOD: " + this.goodNoteCount);
+        return;
+       
     }
 
     // assess if points should be applied
     assessPoints(pick, note) {
-        if (pick.isInv && note.isGood)
+       this.barMovement(pick, note);
+        if (note.isGood){
             return note.points;
-        else
-            return 0;
+        }
+        return 0;
     }
 
     // basic AABB collider
@@ -220,7 +274,7 @@ class Play extends Phaser.Scene {
                     pick.y = 0;
                 } else {
                     this.playerScore += this.assessPoints(pick, note); // apply point values to player score
-                    console.log('Score: ' + this.playerScore);
+                    //console.log('Score: ' + this.playerScore);
                     this.scoreCenter.text = this.playerScore;           // changing the score display
                 }
             }    
