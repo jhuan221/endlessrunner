@@ -37,19 +37,20 @@ class Play extends Phaser.Scene {
         this.moveSpeed = 5; // guitar pick moving speed
 
         // cheer bar variables
-        this.barStatus = 1;
+        this.barStatus = 0;                 // current frame bar is on
+        this.badNoteCount = 0;              // current count of player hitting bad note
         
     }
 
     // PHASER SCENE PRELOAD METHOD
     preload() {
         this.load.image('guitar-body', './assets/tinified/test-guitar-body.png'); // 'GUITAR BODY' W: 741 px, H: 741 px
-        this.load.image('guitar-neck', './assets/tinified/test-guitar-neck2.png'); // 'GUITAR NECK' W: 1200 px, H: 370 px, fret spacing: 300 px
-        this.load.image('guitar-pick', './assets/tinified/test-guitar-pick.png'); // 'GUITAR PICK' W: 50 px, H: 50 px
-        this.load.image('good-note', './assets/tinified/test-good-note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
-        this.load.image('bad-note', './assets/tinified/test-bad-note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
+        this.load.image('guitar-neck', './assets/G_Neck.png'); // 'GUITAR NECK' W: 1200 px, H: 370 px, fret spacing: 300 px
+        this.load.image('guitar-pick', './assets/Pick_Sprite_1.png'); // 'GUITAR PICK' W: 50 px, H: 50 px
+        this.load.image('good-note', './assets/Good_Note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
+        this.load.image('bad-note', './assets/Bad_Note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
-        this.load.spritesheet('bar', './assets/bar.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 4}); // 'BAR' W: 400 pc, H; 100 px
+        this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
     }
 
     // PHASER SCENE CREATE METHOD
@@ -146,8 +147,8 @@ class Play extends Phaser.Scene {
             color: '#000000',
             align: 'center',
             padding: {
-                top: 5,
-                bottom: 5,
+                top: 10,
+                bottom: 10,
             },
             fixedWidth: 100
         }
@@ -155,18 +156,18 @@ class Play extends Phaser.Scene {
         this.gameTimer = this.time.addEvent(this.gameTimerConfig);
         
         // display time
-        this.timeLeft = this.add.text(20, 20, this.gameTimeElapsed + " secs", 
+        this.timeLeft = this.add.text(20, 40, this.gameTimeElapsed + " secs", 
         displayConfig);
 
         // player score
         this.playerScore = 0;
 
         // display score 
-        this.scoreCenter = this.add.text(580, 20,     
+        this.scoreCenter = this.add.text(580, 40,     
         this.playerScore, displayConfig);
 
         // cheer bar setup 
-        this.cheerbar = this.add.sprite(1100, 50, 'bar', 0).setOrigin(0.5);
+        this.cheerbar = this.add.sprite(1085, 60, 'bar', 0).setOrigin(0.5);
         console.log("current frame: " + this.cheerbar.texture.frameTotal);
         //this.cheerbar.visible = false;
         //this.cheerbar.setFrame();
@@ -194,8 +195,7 @@ class Play extends Phaser.Scene {
 
     // assess if points should be applied
     assessPoints(pick, note) {
-        if (!pick.isInv ||
-            pick.isInv && note.isGood)
+        if (pick.isInv && note.isGood)
             return note.points;
         else
             return 0;
