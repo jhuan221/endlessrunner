@@ -12,13 +12,17 @@ let config = {
     //     }
     // },
     scene: [
-        Play
+        Menu,
+        Instructions,
+        Play,
     ]
 }
 
 let game = new Phaser.Game(config);
 
 let keyUp, keyDn, keyLt, keyRt, keySp; // reserve movement keys
+
+let keySPACE; // reserve for start
 
 // DEBUGGING PICKS
 // this.guitarPick2 = this.add.sprite(this.guitarPickX, this.rowPos[1], 'guitar-pick').setOrigin(0.5, 0.5);
