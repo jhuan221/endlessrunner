@@ -5,12 +5,15 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture);
 
         scene.add.existing(this); // add object to scene
+        this.name = 'player'; // playable character
         this.minX = minX; // min X position
         this.maxX = maxX; // max X position
         this.moveSpeed = speed; // guitar pick moving speed
         this.gMoved = false; // up/down input triggers up/down movement once per key press
         this.gMovedDown = false; // true: pick is in motion moving down
         this.gMovedUp = false; // true: pick is in motion moving up
+        this.isInv = false; // true: can run through bad notes without penalty
+        this.SP_active = false; // true: space bar control enabled
     }
 
     // PHASER OBJECT UPDATE METHOD
@@ -19,6 +22,7 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
         this.inputDn(scene); // player moves down
         this.inputLt(); // player moves left
         this.inputRt(); // player moves right
+        if (this.SP_active) this.inputSp(scene); // if space bar is enabled, shoot smaller picks
     }
 
     // UP key moves guitar pick up
@@ -90,6 +94,14 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
     inputRt() {
         if (keyRt.isDown && this.x < this.maxX) { // check if right key is held down and is not at the maxX
             this.x += this.moveSpeed; // move to the right at this speed while held down
+        }
+    }
+
+    inputSp(scene) {
+        if (Phaser.Input.Keyboard.JustDown(keySp)) {
+            let child = scene.bulletGroup.getFirstDead(false, this.x, this.y);
+            child = child.setActive(true);
+            child = child.setVisible(true);
         }
     }
 }

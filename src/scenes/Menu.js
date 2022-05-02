@@ -6,45 +6,22 @@ class Menu extends Phaser.Scene {
 
     preload(){
         this.load.image('menu', './assets/menu.png');
+        this.load.audio('sfx_start', './assets/audio/gamestart.wav', {volume:0.3});
     }
 
     create(){
         this.add.sprite(640,400, 'menu').setOrigin(0.5);
-        //this.scene.start("playScene");
-        // just a temp config for the menu for now
-        // let menuConfig = {
-        //     fontFamily: 'Helvetica',
-        //     fontSize: '28px',
-        //     backgroundColor: '#FFFFFF',
-        //     color: '#0047ab',
-        //     align: 'right',
-        //     padding: {
-        //         top: 5,
-        //         bottom: 5,
-        //     },
-        //     fixedWidth: 0
-        // }
-
-        // temporary menu text
-        // this.add.text(640, 400, 'Endless Strummer', menuConfig).setOrigin(0.5);
-        // this.add.text(640, 480, 'press space to start', menuConfig).setOrigin(0.5);
-        // this.add.text(640, 560, 'press ← for how to play', menuConfig).setOrigin(0.5);
-
+       
         // defining keys
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         keyLt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
 
-        // animation config
-        // this.anims.create({
-        //     key: 'show', 
-        //     frames: this.anims.generateFrameNumbers('title', {start: 0, end: 149, first: 0}),
-        //     frameRate: 40
-        // });
     }
 
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
             //console.log("space is pressed");
+            // this.sound.play('sfx_start');
             this.scene.start('playScene');
         }
         if(Phaser.Input.Keyboard.JustDown(keyLt)){
