@@ -33,6 +33,7 @@ let keySPACE; // reserve for start
 /*
     Endless Strummer
     Joshua Meyers, Jessica Huang, Justin Murillo, Yicheng Xiang
+    May 2 2022
 
     For our creative tilt, we thought of experimenting with the music and incorporating it with 
     the mechanics we have implemented. For example, when pick collect a bad note, 
