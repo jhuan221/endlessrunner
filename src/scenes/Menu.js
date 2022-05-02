@@ -21,7 +21,7 @@ class Menu extends Phaser.Scene {
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
             //console.log("space is pressed");
-            this.sound.play('sfx_start');
+            // this.sound.play('sfx_start');
             this.scene.start('playScene');
         }
         if(Phaser.Input.Keyboard.JustDown(keyLt)){

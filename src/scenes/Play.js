@@ -56,6 +56,7 @@ class Play extends Phaser.Scene {
         this.load.audio('sfx_cheer', './assets/audio/cheering3.wav', {volume: 0.1});
         this.load.audio('sfx_boring', './assets/audio/boring1.wav', {volume: 0.2});
         this.load.audio('sfx_gameover', './assets/audio/gamefail.wav');
+        this.load.audio('sfx_start', './assets/audio/gamestart.wav', {volume:0.3});
     }
 
     // PHASER SCENE CREATE METHOD
@@ -201,7 +202,7 @@ class Play extends Phaser.Scene {
         this.increasevol = 0.1;
         this.decreasevol = 0.1;
         this.cheer = this.sound.add('sfx_cheer', {volume: 0.1});
-        this.boo = this.sound.add('sfx_boring', {volume: 0.5});
+        this.boo = this.sound.add('sfx_boring', {volume: 0.1});
         this.firstc = true;
         this.firstb = true;
 
@@ -428,6 +429,7 @@ class Play extends Phaser.Scene {
             this.noteGroup.getChildren()[i].visible = false;
 
         let countdown = 4;
+        this.sound.play('sfx_start');
 
         // display countdown before start of game
         this.countdownTimer = this.time.addEvent({
