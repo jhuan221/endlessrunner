@@ -38,7 +38,7 @@ let keySPACE; // reserve for start
     the mechanics we have implemented. For example, when pick collect a bad note, 
     a bad sound would play and a good note would have a good sound. Once a player has collected 
     a certain amount of either notes, it would play its respective tune. Additionally, 
-    we added power-ups such as shooter, where a player can shoot bad notes, double speed, the pace 
+    we added power-ups such as shooter, where a player can shoot bad/good notes, double speed, the pace 
     of the game speeds up for a time period, and shield, a player does not decrease their cheer bar
     if they hit a bad note. To emulate strumming a guitar, we have the guitar pick move in all four directions 
     from string to string, with the orientation of the pick facing down.
