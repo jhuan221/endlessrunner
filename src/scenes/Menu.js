@@ -6,6 +6,7 @@ class Menu extends Phaser.Scene {
 
     preload(){
         this.load.image('menu', './assets/menu.png');
+        this.load.audio('sfx_start', './assets/audio/gamestart.wav', {volume:0.3});
     }
 
     create(){
@@ -20,6 +21,7 @@ class Menu extends Phaser.Scene {
     update(){
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
             //console.log("space is pressed");
+            this.sound.play('sfx_start');
             this.scene.start('playScene');
         }
         if(Phaser.Input.Keyboard.JustDown(keyLt)){
