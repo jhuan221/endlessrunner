@@ -51,8 +51,8 @@ class Play extends Phaser.Scene {
         // load audio
         this.load.audio('sfx_bad', './assets/audio/badnote_01.wav');
         this.load.audio('sfx_good', './assets/audio/goodnote_01.wav');
-        this.load.audio('sfx_cheer', './assets/audio/cheering3.wav', {volume: 0.5});
-        this.load.audio('sfx_boring', './assets/audio/boring1.wav', {volume: 0.5});
+        this.load.audio('sfx_cheer', './assets/audio/cheering3.wav', {volume: 0.1});
+        this.load.audio('sfx_boring', './assets/audio/boring1.wav', {volume: 0.2});
         this.load.audio('sfx_gameover', './assets/audio/gamefail.wav');
     }
 
@@ -148,7 +148,7 @@ class Play extends Phaser.Scene {
         let displayConfig = {                             // configuarations for score
             fontFamily: 'Andale Mono',
             fontSize: '28px',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#bababa',
             color: '#000000',
             align: 'center',
             padding: {
@@ -196,7 +196,7 @@ class Play extends Phaser.Scene {
         //game sound vars
         this.increasevol = 0.1;
         this.decreasevol = 0.1;
-        this.cheer = this.sound.add('sfx_cheer', {volume: 0.5});
+        this.cheer = this.sound.add('sfx_cheer', {volume: 0.1});
         this.boo = this.sound.add('sfx_boring', {volume: 0.5});
         this.firstc = true;
         this.firstb = true;
@@ -216,6 +216,7 @@ class Play extends Phaser.Scene {
             this.guitarPick.update(this); // update player guitar pick
             this.fireBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
             //console.log('Active Bullet Count: ' + this.bulletGroup.getLength());
+            //this.cheer.play();
         }
         else if (this.gameOver){
             this.gameStart = false;
@@ -247,21 +248,23 @@ class Play extends Phaser.Scene {
         // console.log("GOOD: " + this.goodNoteCount);
 
         if (this.badNoteCount == 3){
-            console.log("\N BAR CHANGE DECREASE \N");
+            //console.log("\N BAR CHANGE DECREASE \N");
             if (this.barStatus > 0){
                 this.barStatus--;
                 this.cheerbar.setFrame(this.barStatus);
                 this.badNoteCount = 0;
                 if (this.firstb){
                     this.boo.play();
+                    this.firstb = false;
                 }
                 else{
-                    this.increasevol++;
-                    this.decreasevol+= 2;
+                    this.increasevol += 0.1;
+                    this.decreasevol+= 0.2;
                     this.boo.volume += this.increasevol;
-                    if (!this.firstc){
-                        this.cheer.volume -= this.decreasevol;
-                    }
+                    this.cheer.volume -= this.decreasevol;
+                    console.log("INCREASE boo\n");
+                    console.log("current cheer volume: " + this.cheer.volume);
+                    console.log("current boo volume: " + this.boo.volume);
                 }
                 return;
             }
@@ -277,17 +280,15 @@ class Play extends Phaser.Scene {
                 this.barStatus++;
                 this.cheerbar.setFrame(this.barStatus);
                 this.goodNoteCount = 0;
-                if (this.firstc){
-                    this.cheer.play();
+                this.increasevol+= 0.1;
+                this.decreasevol += 0.2;
+                this.cheer.volume += this.increasevol;
+                if (!this.firstb){
+                    this.boo.volume -= this.decreasevol;
                 }
-                else{
-                    this.increasevol++;
-                    this.decreasevol += 2;
-                    this.cheer.volume += this.increasevol;
-                    if (!this.firstb){
-                        this.boo.volume -= this.decreasevol;
-                    }
-                }
+                console.log("INCREASE CHEER\n");
+                console.log("current cheer volume: " + this.cheer.volume);
+                console.log("current boo volume: " + this.boo.volume);
                 return;
             }
         }
@@ -434,6 +435,7 @@ class Play extends Phaser.Scene {
                 this.gameStart = true; // start game
                 this.gameTimer.paused = false; // start game timer
                 this.countdownTimer.remove(); // remove countdown timer
+                this.cheer.play();
                 for (let i = 0; i < this.noteGroup.getChildren().length; i++) // set all notes to visible
                     this.noteGroup.getChildren()[i].visible = true;
             },
