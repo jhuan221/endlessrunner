@@ -249,12 +249,12 @@ class Play extends Phaser.Scene {
             //console.log("good note hit\n");
             this.goodNoteCount++;
         }
-        else if (!note.isGood){
+        else if (!note.isGood && !pick.isInv){
             this.badNoteCount++;
         }
-        // console.log("BAD: " + this.badNoteCount);
-        // console.log("GOOD: " + this.goodNoteCount);
-
+        console.log("BAD: " + this.badNoteCount);
+        console.log("GOOD: " + this.goodNoteCount);
+        console.log("is pick inv: " + pick.isInv);
         if (this.badNoteCount == 3){
             //console.log("\N BAR CHANGE DECREASE \N");
             if (this.barStatus > 0){
