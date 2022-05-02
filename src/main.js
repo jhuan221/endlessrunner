@@ -20,7 +20,7 @@ let config = {
 
 let game = new Phaser.Game(config);
 
-let keyUp, keyDn, keyLt, keyRt, keySp; // reserve movement keys
+let keyUp, keyDn, keyLt, keyRt, keySp, keyM, keyR; // reserve movement keys
 
 let keySPACE; // reserve for start
 

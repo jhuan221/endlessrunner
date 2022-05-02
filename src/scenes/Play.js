@@ -41,8 +41,6 @@ class Play extends Phaser.Scene {
         this.badNoteCount = 0;              // current count of player hitting bad note
         this.goodNoteCount = 0;             // current count of player hitting good note
         
-        // game over var
-        this.gameOver = false;
     }
 
     // PHASER SCENE PRELOAD METHOD
@@ -73,6 +71,8 @@ class Play extends Phaser.Scene {
         keyLt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT); // arrow key LEFT
         keyRt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT); // arrow key RIGHT
         keySp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE); // space bar for shooting
+        keyM = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);    // m for return to menu
+        keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);    // r to restart
 
         // setup note group
         this.noteGroup = new NoteGroup(this, {
@@ -182,16 +182,21 @@ class Play extends Phaser.Scene {
         this.initializeNotes();
         // start game countdown
         this.startCountDown();
+
+        // game over screen
+        this.gameOver = false;
+        this.go = this.add.sprite(640, 400, 'gameover').setOrigin(0.5);
+        this.go.visible = false;
     }
 
     // PHASER SCENE UPDATE METHOD
     update() {
+        if (this.gameStart) {
+            this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
+            this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
+            this.timeLeft.text = this.gameTimeElapsed + " secs"; // updating timer display
+        }
         if (!this.gameOver){
-            if (this.gameStart) {
-                this.scrollGuitar(this.scrollSpeed); // scroll guitar to the left by this.scrollspeed 
-                this.scrollNotes(this.noteGroup); // scroll notes to the left by this.scrollspeed
-                this.timeLeft.text = this.gameTimeElapsed + " secs"; // updating timer display
-            }
             this.resetNotes(this.noteGroup); // reset notes when out of view
             this.checkCollisionBullets(); // iterate over all bullets and notes for collisions
             this.checkCollisionNotes(); // iterate over all notes and check for collisions
@@ -199,8 +204,15 @@ class Play extends Phaser.Scene {
             this.fireBullet(); // SHOOTER MODE: fire bullets loaded into bulletGroup
             //console.log('Active Bullet Count: ' + this.bulletGroup.getLength());
         }
-        else{
-            this.add.sprite(640, 400, 'gameover').setOrigin(0.5);
+        else if (this.gameOver){
+            this.gameStart = false;
+            this.go.visible = true;
+            if (Phaser.Input.Keyboard.JustDown(keyR)){
+                this.scene.restart();
+            }
+            if(Phaser.Input.Keyboard.JustDown(keyM)){
+                this.scene.start('menuScene');
+            }
         }
     }
 
@@ -211,7 +223,17 @@ class Play extends Phaser.Scene {
     barMovement(pick, note){
         // console.log("BAD: " + this.badNoteCount);
         // console.log("GOOD: " + this.goodNoteCount);
-        if (this.badNoteCount == 2){
+        if (note.isGood){
+            //console.log("good note hit\n");
+            this.goodNoteCount++;
+        }
+        else if (!note.isGood){
+            this.badNoteCount++;
+        }
+        // console.log("BAD: " + this.badNoteCount);
+        // console.log("GOOD: " + this.goodNoteCount);
+
+        if (this.badNoteCount == 3){
             console.log("\N BAR CHANGE DECREASE \N");
             if (this.barStatus > 0){
                 this.barStatus--;
@@ -224,7 +246,7 @@ class Play extends Phaser.Scene {
                 return;
             }
         }
-        else if (this.goodNoteCount == 4){
+        else if (this.goodNoteCount == 5){
             console.log("\N BAR CHANGE INCREASE \N");
             if (this.barStatus != 16){
                 this.barStatus++;
@@ -233,17 +255,7 @@ class Play extends Phaser.Scene {
                 return;
             }
         }
-        if (note.isGood){
-            //console.log("good note hit\n");
-            this.goodNoteCount++;
-        }
-        else if (!note.isGood){
-            this.badNoteCount++;
-        }
-          console.log("BAD: " + this.badNoteCount);
-        console.log("GOOD: " + this.goodNoteCount);
-        return;
-       
+       return;
     }
 
     // assess if points should be applied
