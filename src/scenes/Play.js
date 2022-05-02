@@ -49,6 +49,7 @@ class Play extends Phaser.Scene {
         this.load.image('invincible_text', './assets/Protect.png'); // Invincibility Sprite
         this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
         this.load.image('gameover', './assets/gameovertitle.png' );
+        this.load.spritesheet('cd', './assets/countdown.png', {frameWidth: 507, frameHeight: 480, startFrame: 0, endFrame: 2});
         // load audio
         this.load.audio('sfx_bad', './assets/audio/badnote_01.wav');
         this.load.audio('sfx_good', './assets/audio/goodnote_01.wav');
@@ -187,6 +188,8 @@ class Play extends Phaser.Scene {
         // assign each note a name and several attributes
         this.initializeNotes();
         // start game countdown
+        this.counter = 0;
+        this.displaycd = this.add.sprite(640, 400, 'cd').setOrigin(0.5);
         this.startCountDown();
 
         // game over screen
@@ -201,6 +204,7 @@ class Play extends Phaser.Scene {
         this.boo = this.sound.add('sfx_boring', {volume: 0.5});
         this.firstc = true;
         this.firstb = true;
+
     }
 
     // PHASER SCENE UPDATE METHOD
@@ -430,6 +434,9 @@ class Play extends Phaser.Scene {
             callback: () => {
                 console.log('Countdown: ' + (countdown - 1));
                 countdown -= 1;
+                this.counter++;
+                this.displaycd.setFrame(this.counter);
+                if (this.counter >= 3) this.displaycd.visible = false;
             },
             callbackScope: this,
             delay: 1000, // 1 second
