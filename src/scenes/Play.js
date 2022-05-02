@@ -40,13 +40,15 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE PRELOAD METHOD
     preload() {
-        this.load.image('guitar-body', './assets/tinified/test-guitar-body.png'); // 'GUITAR BODY' W: 741 px, H: 741 px
+        this.load.image('guitar-body-back', './assets/G_Head_Back.png'); // 'GUITAR BODY FRONT'
+        this.load.image('guitar-body-front', './assets/G_head_Front.png'); // 'GUITAR BODY FRONT'
         this.load.image('guitar-neck', './assets/G_Neck.png'); // 'GUITAR NECK' W: 1200 px, H: 370 px, fret spacing: 300 px
         this.load.image('guitar-pick', './assets/Pick_Sprite_1.png'); // 'GUITAR PICK' W: 50 px, H: 50 px
         this.load.image('good-note', './assets/Good_Note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
         this.load.image('bad-note', './assets/Bad_Note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
         this.load.image('invincible_text', './assets/Protect.png'); // Invincibility Sprite
+        this.load.image('shooter_text', './assets/Shoot.png'); // Shooter Sprite
         this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
         this.load.image('gameover', './assets/gameovertitle.png' );
         this.load.spritesheet('cd', './assets/countdown.png', {frameWidth: 507, frameHeight: 480, startFrame: 0, endFrame: 2});
@@ -63,11 +65,11 @@ class Play extends Phaser.Scene {
     create() {
 
         // create guitar parts
-        this.guitarBodyBig = this.add.sprite(game.config.width/2, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position behind guitar neck
+        this.guitarBodyBig = this.add.sprite(7*(game.config.width)/10, game.config.height/2, 'guitar-body-back').setOrigin(0.5, 0.5); // position behind guitar neck
         this.guitarNeck = this.add.tileSprite(0, game.config.height/2, 1280, 370, 'guitar-neck').setOrigin(0, 0.5); // guitar neck is the main scrolling tileSprite
-        this.guitarBodySmall = this.add.sprite((3*game.config.width)/10, game.config.height/2, 'guitar-body').setOrigin(0.5, 0.5); // position in front of guitar neck
-        this.guitarBodyBig.setScale(2, 1.25); // (W, H) scaled to be larger than guitarBodySmall
-        this.guitarBodySmall.setScale(1.25, 1); // (W, H) scaled to cover guitar neck
+        this.guitarBodySmall = this.add.sprite(6*(game.config.width)/10, game.config.height/2, 'guitar-body-front').setOrigin(1, 0.5); // position in front of guitar neck
+        //this.guitarBodyBig.setScale(2, 1.25); // (W, H) scaled to be larger than guitarBodySmall
+        //this.guitarBodySmall.setScale(1.25, 1); // (W, H) scaled to cover guitar neck
 
         // player controls
         keyUp = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP); // arrow key UP
@@ -160,6 +162,19 @@ class Play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
+
+        this.gameSpeedConfig = {
+            callback: () => {
+                this.scrollSpeed += 1; // increase game speed by 1
+            },
+            callbackScope: this,
+            delay: 30000, // every 30 seconds
+            loop: true,
+            paused: true
+        }
+
+        this.gameSpeedTimer = this.time.addEvent(this.gameSpeedConfig);
+
         // scene timer
         this.gameTimer = this.time.addEvent(this.gameTimerConfig);
         
@@ -396,9 +411,9 @@ class Play extends Phaser.Scene {
             child.isPowerUp = true; // good note is upgraded to a powerup note
             child.powerUpType = this.PU_Ary[Phaser.Math.Between(0, this.PU_Ary.length - 1)]; // select a powerup at random
             if (child.powerUpType.name == 'invincible')
-                child.setText('invincible_text'); // set note texture to powerup texture
+                child.setText('invincible_text'); // set note texture to invincible texture
             if (child.powerUpType.name == 'shooter')
-                child.setText('powerup-note');
+                child.setText('shooter_text'); // set note texture to shooter texture
         } else {
             child.isPowerUp = false;
             child.powerUpType = new PowerUp('none');
@@ -450,6 +465,7 @@ class Play extends Phaser.Scene {
             callback: () => {
                 this.gameStart = true; // start game
                 this.gameTimer.paused = false; // start game timer
+                this.gameSpeedTimer.paused = false; // start timer to increment game speed
                 this.countdownTimer.remove(); // remove countdown timer
                 this.cheer.play();
                 for (let i = 0; i < this.noteGroup.getChildren().length; i++) // set all notes to visible
