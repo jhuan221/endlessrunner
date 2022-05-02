@@ -48,6 +48,12 @@ class Play extends Phaser.Scene {
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
         this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
         this.load.image('gameover', './assets/gameovertitle.png' );
+        // load audio
+        this.load.audio('sfx_bad', './assets/audio/badnote_01.wav');
+        this.load.audio('sfx_good', './assets/audio/goodnote_01.wav');
+        this.load.audio('sfx_cheer', './assets/audio/cheering3.wav', {volume: 0.5});
+        this.load.audio('sfx_boring', './assets/audio/boring1.wav', {volume: 0.5});
+        this.load.audio('sfx_gameover', './assets/audio/gamefail.wav');
     }
 
     // PHASER SCENE CREATE METHOD
@@ -186,6 +192,14 @@ class Play extends Phaser.Scene {
         this.gameOver = false;
         this.go = this.add.sprite(640, 400, 'gameover').setOrigin(0.5);
         this.go.visible = false;
+
+        //game sound vars
+        this.increasevol = 0.1;
+        this.decreasevol = 0.1;
+        this.cheer = this.sound.add('sfx_cheer', {volume: 0.5});
+        this.boo = this.sound.add('sfx_boring', {volume: 0.5});
+        this.firstc = true;
+        this.firstb = true;
     }
 
     // PHASER SCENE UPDATE METHOD
@@ -238,10 +252,22 @@ class Play extends Phaser.Scene {
                 this.barStatus--;
                 this.cheerbar.setFrame(this.barStatus);
                 this.badNoteCount = 0;
+                if (this.firstb){
+                    this.boo.play();
+                }
+                else{
+                    this.increasevol++;
+                    this.decreasevol+= 2;
+                    this.boo.volume += this.increasevol;
+                    if (!this.firstc){
+                        this.cheer.volume -= this.decreasevol;
+                    }
+                }
                 return;
             }
             else{
                 this.gameOver = true;
+                this.sound.stopAll();
                 return;
             }
         }
@@ -251,6 +277,17 @@ class Play extends Phaser.Scene {
                 this.barStatus++;
                 this.cheerbar.setFrame(this.barStatus);
                 this.goodNoteCount = 0;
+                if (this.firstc){
+                    this.cheer.play();
+                }
+                else{
+                    this.increasevol++;
+                    this.decreasevol += 2;
+                    this.cheer.volume += this.increasevol;
+                    if (!this.firstb){
+                        this.boo.volume -= this.decreasevol;
+                    }
+                }
                 return;
             }
         }
@@ -274,6 +311,12 @@ class Play extends Phaser.Scene {
             pick.y + pick.height > note.y &&
             note.active) {
                 //console.log(note.name + ' isGood: ' + note.isGood); // for debugging
+                if (note.isGood){
+                    this.sound.play('sfx_good');
+                }
+                else if (!note.isGood && !note.isPowerUp){
+                    this.sound.play('sfx_bad');
+                }
                 note.visible = false; // make note invisible
                 note.active = false; // make note not interactable
                 if (note.isPowerUp && !this.PU_active) { // if note was a powerup
