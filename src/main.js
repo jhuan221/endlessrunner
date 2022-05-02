@@ -24,6 +24,7 @@ let keyUp, keyDn, keyLt, keyRt, keySp, keyM, keyR; // reserve movement keys
 
 let keySPACE; // reserve for start
 
+
 // DEBUGGING PICKS
 // this.guitarPick2 = this.add.sprite(this.guitarPickX, this.rowPos[1], 'guitar-pick').setOrigin(0.5, 0.5);
 // this.guitarPick3 = this.add.sprite(this.guitarPickX, this.rowPos[2], 'guitar-pick').setOrigin(0.5, 0.5);

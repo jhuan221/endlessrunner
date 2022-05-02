@@ -48,11 +48,9 @@ class Shooter extends PowerUp {
     modifyScene(pick, scene) {
         console.log('shooter');
         pick.SP_active = true;
-        //scene.scrollSpeed += this.PU_scrollSpeed;
         scene.PU_timer = scene.time.addEvent({
             callback: () => {
                 console.log('End shooter');
-                //scene.scrollSpeed -= this.PU_scrollSpeed;
                 scene.PU_active = false;
                 pick.SP_active = false;
             },

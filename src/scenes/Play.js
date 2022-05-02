@@ -30,6 +30,9 @@ class Play extends Phaser.Scene {
         this.load.audio('sfx_boring', './assets/audio/boring1.wav', {volume: 0.2});
         this.load.audio('sfx_gameover', './assets/audio/gamefail.wav');
         this.load.audio('sfx_start', './assets/audio/gamestart.wav', {volume:0.3});
+
+        let canvas = this.sys.canvas;
+        canvas.style.cursor = 'none'; // Hide cursor while in play scene
     }
 
     // PHASER SCENE CREATE METHOD
