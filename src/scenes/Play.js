@@ -35,11 +35,6 @@ class Play extends Phaser.Scene {
         this.guitarPickX = game.config.width/10; // player's starting X position
         this.guitarPickY = this.rowPos[this.gY]; // player's starting Y position
         this.moveSpeed = 5; // guitar pick moving speed
-
-        // cheer bar variables
-        this.barStatus = 1;                 // current frame bar is on
-        this.badNoteCount = 0;              // current count of player hitting bad note
-        this.goodNoteCount = 0;             // current count of player hitting good note
         
     }
 
@@ -171,6 +166,10 @@ class Play extends Phaser.Scene {
         this.playerScore, displayConfig);
 
         // cheer bar setup 
+        // cheer bar variables
+        this.barStatus = 1;                 // current frame bar is on
+        this.badNoteCount = 0;              // current count of player hitting bad note
+        this.goodNoteCount = 0;             // current count of player hitting good note
         this.cheerbar = this.add.sprite(1085, 60, 'bar', this.barStatus).setOrigin(0.5);
         //this.barStatus = 16;
         //this.cheerbar.frame = this.barStatus;
