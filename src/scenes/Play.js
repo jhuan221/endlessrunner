@@ -3,38 +3,6 @@
 class Play extends Phaser.Scene {
     constructor() {
         super('playScene');
-
-        this.scrollSpeed = 3; // game scrolling speed
-
-        // guitar strings
-        this.rowPos = [
-            (2.5*game.config.height)/8, // String 1 (TOP)
-            (3.5*game.config.height)/8, // String 2
-            (4.5*game.config.height)/8, // String 3
-            (5.5*game.config.height)/8  // String 4
-        ];
-        
-        // note/note group variables
-        this.lastRow = -1; // to track last row assignment of a note
-        this.minType = 0; // the smallest number in a range for random note type generator
-        this.maxType = 9; // the largest number in a range for random note type generator
-        this.modType = 3; // the modulus used for assigning good or bad notes
-        this.noteCount = 9; // number of notes to spawn on screen
-        this.noteSize = 50; // pixel size of each note
-        this.spacingX = 150; // spacing between notes
-        this.gPts = 10; // good notes: +10 points
-        this.bPts = -5; // bad notes: -5 points
-
-        // note powerup variables
-        this.PU_spawn = false; // if true, note group will try to spawn a power-up (logic prevents having too many power-ups at one time)
-        this.PU_active = false; // if true, a powerup was picked up and is active
-        this.bulletCount = 15; // USED ONLY FOR DEBUGGING
-
-        // guitar pick variables
-        this.gY = Phaser.Math.Between(0, this.rowPos.length - 1) // randomly chooses an index for pick starting Y position
-        this.guitarPickX = game.config.width/10; // player's starting X position
-        this.guitarPickY = this.rowPos[this.gY]; // player's starting Y position
-        this.moveSpeed = 5; // guitar pick moving speed
         
     }
 
@@ -66,6 +34,37 @@ class Play extends Phaser.Scene {
 
     // PHASER SCENE CREATE METHOD
     create() {
+        this.scrollSpeed = 3; // game scrolling speed
+
+        // guitar strings
+        this.rowPos = [
+            (2.5*game.config.height)/8, // String 1 (TOP)
+            (3.5*game.config.height)/8, // String 2
+            (4.5*game.config.height)/8, // String 3
+            (5.5*game.config.height)/8  // String 4
+        ];
+        
+        // note/note group variables
+        this.lastRow = -1; // to track last row assignment of a note
+        this.minType = 0; // the smallest number in a range for random note type generator
+        this.maxType = 9; // the largest number in a range for random note type generator
+        this.modType = 3; // the modulus used for assigning good or bad notes
+        this.noteCount = 9; // number of notes to spawn on screen
+        this.noteSize = 50; // pixel size of each note
+        this.spacingX = 150; // spacing between notes
+        this.gPts = 10; // good notes: +10 points
+        this.bPts = -5; // bad notes: -5 points
+
+        // note powerup variables
+        this.PU_spawn = false; // if true, note group will try to spawn a power-up (logic prevents having too many power-ups at one time)
+        this.PU_active = false; // if true, a powerup was picked up and is active
+        this.bulletCount = 15; // USED ONLY FOR DEBUGGING
+
+        // guitar pick variables
+        this.gY = Phaser.Math.Between(0, this.rowPos.length - 1) // randomly chooses an index for pick starting Y position
+        this.guitarPickX = game.config.width/10; // player's starting X position
+        this.guitarPickY = this.rowPos[this.gY]; // player's starting Y position
+        this.moveSpeed = 5; // guitar pick moving speed
 
         // create guitar parts
         this.guitarBodyBig = this.add.sprite(7*(game.config.width)/10, game.config.height/2, 'guitar-body-back').setOrigin(0.5, 0.5); // position behind guitar neck
@@ -249,9 +248,7 @@ class Play extends Phaser.Scene {
             this.gameStart = false;
             this.go.visible = true;
             if (Phaser.Input.Keyboard.JustDown(keyR)){
-                this.registry.destroy(); // dump data in DataManager
-                this.events.off() // dump any allocated events in Scene
-                this.scene.restart(); // restart
+                this.scene.restart();
             }
             if(Phaser.Input.Keyboard.JustDown(keyM)){
                 this.scene.start('menuScene');
