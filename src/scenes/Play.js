@@ -47,11 +47,14 @@ class Play extends Phaser.Scene {
         this.load.image('good-note', './assets/Good_Note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
         this.load.image('bad-note', './assets/Bad_Note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
-        this.load.image('invincible_text', './assets/Protect.png'); // Invincibility Sprite
-        this.load.image('shooter_text', './assets/Shoot.png'); // Shooter Sprite
+        
         this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
         this.load.image('gameover', './assets/gameovertitle.png' );
         this.load.spritesheet('cd', './assets/countdown.png', {frameWidth: 507, frameHeight: 480, startFrame: 0, endFrame: 2});
+        // power-ups
+        this.load.image('invincible_text', './assets/Protect.png'); // Invincibility Sprite
+        this.load.image('shooter_text', './assets/Shoot.png'); // Shooter Sprite
+        this.load.image('dblspeed_text', './assets/Double_Speed.png'); // Double Speed Sprite
         // load audio
         this.load.audio('sfx_bad', './assets/audio/badnote_01.wav');
         this.load.audio('sfx_good', './assets/audio/goodnote_01.wav');
@@ -126,9 +129,11 @@ class Play extends Phaser.Scene {
         // power-up types
         this.PU_Inv = new Invincible('invincible', 3, 5000); // INVINCIBILITY MODE
         this.PU_Str = new Shooter('shooter', 0, 7000); // SHOOTER MODE
+        this.PU_Spd = new DblSpeed('double speed', this.scrollSpeed, 8000); // DOUBLE SPEED
         this.PU_Ary = [
-            this.PU_Inv, 
-            this.PU_Str
+            {pu: this.PU_Inv, text:  'invincible_text'},
+            {pu: this.PU_Str, text: 'shooter_text'},
+            {pu: this.PU_Spd, text: 'dblspeed_text'}
         ];
 
         // game start or paused
@@ -409,11 +414,14 @@ class Play extends Phaser.Scene {
             this.PU_spawn = false; // prevent more powerups from spawning until timer elapses
             this.powerupTimer = this.time.addEvent(this.powerupTimerConfig); // timer until next powerup can spawn
             child.isPowerUp = true; // good note is upgraded to a powerup note
-            child.powerUpType = this.PU_Ary[Phaser.Math.Between(0, this.PU_Ary.length - 1)]; // select a powerup at random
-            if (child.powerUpType.name == 'invincible')
-                child.setText('invincible_text'); // set note texture to invincible texture
-            if (child.powerUpType.name == 'shooter')
-                child.setText('shooter_text'); // set note texture to shooter texture
+            //child.powerUpType = this.PU_Ary[Phaser.Math.Between(0, this.PU_Ary.length - 1)]; // select a powerup at random
+            let powerup = this.PU_Ary[Phaser.Math.Between(0, this.PU_Ary.length - 1)]; // select a powerup at random
+            child.powerUpType = powerup.pu;
+            child.setText(powerup.text);
+            // if (child.powerUpType.name == 'invincible')
+            //     child.setText('invincible_text'); // set note texture to invincible texture
+            // if (child.powerUpType.name == 'shooter')
+            //     child.setText('shooter_text'); // set note texture to shooter texture
         } else {
             child.isPowerUp = false;
             child.powerUpType = new PowerUp('none');

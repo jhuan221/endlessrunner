@@ -13,6 +13,7 @@ class GuitarPick extends Phaser.GameObjects.Sprite {
         this.gMovedDown = false; // true: pick is in motion moving down
         this.gMovedUp = false; // true: pick is in motion moving up
         this.isInv = false; // true: can run through bad notes without penalty
+        this.SP_active = false; // true: space bar control enabled
     }
 
     // PHASER OBJECT UPDATE METHOD

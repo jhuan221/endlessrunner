@@ -42,7 +42,7 @@ class Invincible extends PowerUp {
 class Shooter extends PowerUp {
     constructor(name, scrollSpeed, duration) {
         super(name, scrollSpeed, duration);
-        this.PU_isInv = true; // will change guitar pick to run through bad notes without penalty
+        this.PU_isInv = false; // will change guitar pick to run through bad notes without penalty
     }
 
     modifyScene(pick, scene) {
@@ -55,6 +55,29 @@ class Shooter extends PowerUp {
                 //scene.scrollSpeed -= this.PU_scrollSpeed;
                 scene.PU_active = false;
                 pick.SP_active = false;
+            },
+            callbackScope: scene,
+            delay: this.duration
+        })
+    }
+}
+
+// Pick can now shoot smaller picks to destroy bad (and good) notes
+class DblSpeed extends PowerUp {
+    constructor(name, scrollSpeed, duration) {
+        super(name, scrollSpeed, duration);
+        this.PU_isInv = false; // will change guitar pick to run through bad notes without penalty
+        this.PU_scrollSpeed = scrollSpeed;
+    }
+
+    modifyScene(pick, scene) {
+        console.log('double speed');
+        scene.scrollSpeed += this.PU_scrollSpeed;
+        scene.PU_timer = scene.time.addEvent({
+            callback: () => {
+                console.log('End double speed');
+                scene.scrollSpeed -= this.PU_scrollSpeed;
+                scene.PU_active = false;
             },
             callbackScope: scene,
             delay: this.duration
