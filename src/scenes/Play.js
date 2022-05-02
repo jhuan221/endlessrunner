@@ -46,6 +46,7 @@ class Play extends Phaser.Scene {
         this.load.image('good-note', './assets/Good_Note.png'); // 'GOOD NOTE' W: 50 px, H: 50 px
         this.load.image('bad-note', './assets/Bad_Note.png'); // 'BAD NOTE' W: 50 px, H: 50 px
         this.load.image('powerup-note', './assets/tinified/test-powerup-note.png'); // 'POWERUP NOTE' W: 50 px, H: 50 px
+        this.load.image('invincible_text', './assets/Protect.png'); // Invincibility Sprite
         this.load.spritesheet('bar', './assets/Bar-Sheet.png', {frameWidth: 400, frameHeight: 100, startFrame: 0, endFrame: 16}); // 'BAR' W: 400 pc, H; 100 px
         this.load.image('gameover', './assets/gameovertitle.png' );
         // load audio
@@ -219,10 +220,13 @@ class Play extends Phaser.Scene {
             //this.cheer.play();
         }
         else if (this.gameOver){
+            //this.scene.start('gameOverScene');
             this.gameStart = false;
             this.go.visible = true;
             if (Phaser.Input.Keyboard.JustDown(keyR)){
-                this.scene.restart();
+                this.registry.destroy(); // dump data in DataManager
+                this.events.off() // dump any allocated events in Scene
+                this.scene.restart(); // restart
             }
             if(Phaser.Input.Keyboard.JustDown(keyM)){
                 this.scene.start('menuScene');
@@ -386,7 +390,10 @@ class Play extends Phaser.Scene {
             this.powerupTimer = this.time.addEvent(this.powerupTimerConfig); // timer until next powerup can spawn
             child.isPowerUp = true; // good note is upgraded to a powerup note
             child.powerUpType = this.PU_Ary[Phaser.Math.Between(0, this.PU_Ary.length - 1)]; // select a powerup at random
-            child.setText('powerup-note'); // set note texture to powerup texture
+            if (child.powerUpType.name == 'invincible')
+                child.setText('invincible_text'); // set note texture to powerup texture
+            if (child.powerUpType.name == 'shooter')
+                child.setText('powerup-note');
         } else {
             child.isPowerUp = false;
             child.powerUpType = new PowerUp('none');

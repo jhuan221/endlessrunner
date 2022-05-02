@@ -15,6 +15,7 @@ let config = {
         Menu,
         Instructions,
         Play,
+        GameOver
     ]
 }
 
