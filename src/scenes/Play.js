@@ -290,7 +290,7 @@ class Play extends Phaser.Scene {
                     this.increasevol += 0.1;
                     this.decreasevol+= 0.2;
                     this.boo.volume += this.increasevol;
-                    this.cheer.volume -= this.decreasevol;
+                    if (this.cheer.volume > 0.1) this.cheer.volume -= this.decreasevol;
                     console.log("INCREASE boo\n");
                     console.log("current cheer volume: " + this.cheer.volume);
                     console.log("current boo volume: " + this.boo.volume);
