@@ -309,8 +309,8 @@ class Play extends Phaser.Scene {
                 this.barStatus++;
                 this.cheerbar.setFrame(this.barStatus);
                 this.goodNoteCount = 0;
-                this.increasevol+= 0.1;
-                this.decreasevol += 0.2;
+                this.increasevol+= 0.01;
+                this.decreasevol += 0.02;
                 this.cheer.volume += this.increasevol;
                 if (!this.firstb){
                     this.boo.volume -= this.decreasevol;
